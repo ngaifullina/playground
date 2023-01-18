@@ -1,4 +1,4 @@
-import { fibonacci } from "./fibonacci";
+import { fibonacci, fibonacciIndex } from "./fibonacci";
 
 describe("Fibonacci number N = ", () => {
   test("0", () => {
@@ -29,5 +29,23 @@ describe("Fibonacci number N = ", () => {
   });
   test("-1", () => {
     expect(() => fibonacci(-1)).toThrowError();
+  });
+});
+
+describe("fibonacciIndex", () => {
+  test("21", () => {
+    expect(fibonacciIndex(21)).toBe(8);
+  });
+
+  test("13", () => {
+    expect(fibonacciIndex(13)).toBe(7);
+  });
+
+  test("2", () => {
+    expect(fibonacciIndex(2)).toBe(3);
+  });
+
+  test("-1", () => {
+    expect(() => fibonacciIndex(-1)).toThrowError();
   });
 });

@@ -12,11 +12,9 @@ const fibonacciLoop = (
   current: number,
   remainingIterations: number
 ): number => {
-  //todo why not remainingIterations === 0
   if (remainingIterations <= 0) {
     return prev;
   } else {
-    console.log(prev, current, remainingIterations, "fibonacciLoop");
     return fibonacciLoop(current, current + prev, remainingIterations - 1);
   }
 };
@@ -58,3 +56,20 @@ const fibonacciRecursion = (n: number) => {
   }
   return fibonacci(n - 1) + fibonacci(n - 2);
 };
+
+export const fibonacciIndex = (n: number) => {
+  if (n < 0) throw new Error(`Received negative N for fibonacci input: ${n}`);
+
+  let index = 1;
+  let a = 1;
+  let b = 1;
+  let sum = 0;
+  while (sum <= n) {
+    sum = a + b;
+    a = b;
+    b = sum;
+    index++;
+  }
+  return index;
+};
+console.log(fibonacciIndex(21));
