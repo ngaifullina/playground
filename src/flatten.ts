@@ -11,7 +11,6 @@ export const flatten = (array: any): number[] => {
 
 // export const flatten = (array: any[]): number[] => {
 //   return array.reduce((acc: number[], item: any) => {
-//     console.log(acc);
 //     if (typeof item === "number") {
 //       acc.push(item);
 //     } else {

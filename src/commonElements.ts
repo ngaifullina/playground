@@ -12,5 +12,3 @@ function common(a: Array<number>, b: Array<number>) {
   }
   return commonArr;
 }
-
-console.log(common(first, second));
