@@ -1,4 +1,4 @@
-import ModelNumber from "./modelNumber";
+import ModelNumber from "./model";
 
 describe("modelNumber", () => {
   const VALUE = 10;
