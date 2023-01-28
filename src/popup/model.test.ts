@@ -1,11 +1,11 @@
-import ModelNumber from "./model";
+import Model from "./model";
 
 describe("modelNumber", () => {
   const VALUE = 10;
   const VALUE_1 = 20;
   const VALUE_2 = 30;
 
-  const newModel = () => new ModelNumber(VALUE);
+  const newModel = () => new Model(VALUE);
 
   test("should return initial value", () => {
     const model = newModel();

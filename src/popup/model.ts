@@ -1,4 +1,4 @@
-class ModelNumber<T> {
+class Model<T> {
   private state: T;
   private callback: (newValue: T) => void;
 
@@ -23,4 +23,4 @@ class ModelNumber<T> {
   }
 }
 
-export default ModelNumber;
+export default Model;
