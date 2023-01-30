@@ -1,24 +1,27 @@
+export type CalbackFn<T> = (newValue: T) => void;
+
 class Model<T> {
   private state: T;
-  private callback: (newValue: T) => void;
+  private callback: CalbackFn<T> = () => {};
 
   constructor(initial: T) {
     this.state = initial;
-    this.callback = (_) => {};
   }
 
-  get(): T {
+  public get(): T {
     return this.state;
   }
 
-  set(newValue: T) {
-    if (this.state !== newValue) {
-      this.callback(newValue);
-    }
+  public set(newValue: T) {
     this.state = newValue;
+    this.trigger();
   }
 
-  onChange(callback: (newValue: T) => void) {
+  public trigger() {
+    this.callback(this.state);
+  }
+
+  public onChange(callback: CalbackFn<T>) {
     this.callback = callback;
   }
 }
