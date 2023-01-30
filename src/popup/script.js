@@ -22,37 +22,72 @@ class Model {
     this.callback = callback;
   }
 }
+class Form {
+  // TODO;
+
+  // TODO initial arguments
+  constructor(rootElement) {
+    // todo this.model = new Model()
+    this.rootElement = rootElement;
+  }
+
+  // todo arguments
+  addField(id) {
+    plusButton.insertAdjacentHTML(
+      "beforebegin",
+      `<div class="form__raw">
+    <input type="text" name="" id=${id}/>
+    <label>${id}</label>
+  </div>`
+    );
+  }
+
+  deleteField() {
+    const collection = document.querySelectorAll(".form__raw");
+    collection[collection.length - 1].remove();
+  }
+
+  changeFieldKey() {}
+
+  changeFieldValue() {}
+}
+
 const button = document.querySelector("button");
 const form = document.querySelector("form");
 const modal = document.querySelector(".main_cover");
+const formModel = new Form(form);
+const plusButton = document.querySelector(".form__plus");
+const minusButton = document.querySelector(".form__minus");
 
 const data = [
   {
-    id: "#name",
+    id: "Name",
     model: new Model(""),
     callback: (newValue) =>
       (document.querySelector("#nameToChange").textContent = newValue),
   },
-  {
-    id: "#job",
-    model: new Model(""),
-    callback: (newValue) =>
-      (document.querySelector("#jobToChange").textContent = newValue),
-  },
+  // {
+  //   id: "#job",
+  //   model: new Model(""),
+  //   callback: (newValue) =>
+  //     (document.querySelector("#jobToChange").textContent = newValue),
+  // },
 ];
 
 button.addEventListener("click", () => {
   modal.classList.add("visible");
 });
 
+plusButton.addEventListener("click", () => formModel.addField("Job"));
+minusButton.addEventListener("click", () => formModel.deleteField());
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   data
-    .filter((el) => document.querySelector(el.id).value)
+    .filter((el) => document.querySelector(`#${el.id}`).value)
     .forEach((el) => {
       el.model.onChange(el.callback);
-      el.model.set(document.querySelector(el.id).value);
+      el.model.set(document.querySelector(`#${el.id}`).value);
     });
 
   modal.classList.remove("visible");
