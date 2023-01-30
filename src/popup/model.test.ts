@@ -29,8 +29,8 @@ describe("modelNumber", () => {
       };
 
       // managedValue does not change, because not subscribed yet
-      // model.set(VALUE_1);
-      // expect(managedValue).toBe(VALUE);
+      model.set(VALUE_1);
+      expect(managedValue).toBe(VALUE);
 
       // subscribing `managedValue` to model updates
       model.onChange(updateManagedValue);
@@ -40,12 +40,21 @@ describe("modelNumber", () => {
       expect(managedValue).toBe(VALUE_2);
     });
 
-    test("should not trigger callback if value has not changed", () => {
-      const callback = jest.fn(() => {});
-      const model = newModel();
-      model.onChange(callback);
-      model.set(VALUE);
-      expect(callback).not.toBeCalled();
+    describe("trigger", () => {
+      test("supports manual internal mutable operation", () => {
+        const callback = jest.fn(() => {});
+        const model = new Model([0]);
+        model.onChange(callback);
+
+        // common use case: read, modify collection and save result
+        let internalArray = model.get();
+        internalArray.pop();
+        internalArray.push(1);
+        model.trigger();
+
+        expect(model.get()).not.toEqual([0]);
+        expect(callback).toBeCalledTimes(1);
+      });
     });
   });
 });
