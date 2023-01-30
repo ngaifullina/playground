@@ -81,7 +81,8 @@ body {
 
 .main_cover {
   position: fixed;
-  display: none;
+  /* display: none; */
+  display: block; /*todo remove */
   background-color: RGBA(0, 0, 0, 0.6);
   top: 0;
   bottom: 0;
@@ -89,7 +90,7 @@ body {
   right: 0;
 }
 
-.main__form {
+.form {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -107,11 +108,11 @@ body {
   display: block;
 }
 
-.main__form .main__form-raw {
+.form .form__raw {
   position: relative;
 }
 
-.main__form .main__form-raw input {
+.form .form__raw input {
   width: 100%;
   padding: 10px 0;
   font-size: 16px;
@@ -123,7 +124,7 @@ body {
   background: transparent;
 }
 
-.main__form .main__form-raw label {
+.form .form__raw label {
   position: absolute;
   top: 0;
   left: 0;
@@ -133,29 +134,82 @@ body {
   pointer-events: none;
 }
 
-.main__form .main__form-raw input:focus ~ label,
-.main__form .main__form-raw input:valid ~ label {
+.form .form__raw input:focus ~ label,
+.form .form__raw input:valid ~ label {
   top: -20px;
   left: 0;
   color: #243b55;
   font-size: 12px;
 }
 
-.main__form button {
+.form__plus {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px;
+}
+
+.form__plus:after {
+  content: "";
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 2px;
+  width: 50%;
+  background-color: #243b55;
+  top: 50%;
+  left: 50%;
+}
+
+.form__plus:before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #243b55;
+  height: 50%;
+  width: 2px;
+}
+
+.form__plus:hover:before,
+.form__plus:hover:after {
+  background: #fff;
+  transition: 0.2s;
+}
+
+.form__plus:hover {
+  background-color: #0f1011;
+  transition: 0.2s;
+}
+
+.form__minus:before {
+  content: none;
+}
+
+.form__button {
   position: relative;
   border: none;
-  display: inline-block;
+  display: block;
   padding: 10px 20px;
   font-size: 16px;
   text-decoration: none;
   text-transform: uppercase;
   overflow: hidden;
-  margin-top: 40px;
+  margin-top: 20px;
   letter-spacing: 4px;
   color: #fff;
   background-color: #243b55;
 }
 
-.main__form button:hover {
+.form__button:hover {
   background-color: #0f1011;
+}
+
+.form__controls {
+  display: inline-block;
 }
