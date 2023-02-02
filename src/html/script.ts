@@ -1,137 +1,37 @@
-import Model from "./model.js";
+import { data } from "./lib/data.js";
+import Form from "./lib/form.js";
 
-type FieldModelValue = { option: string; optionValue: string };
-
-type Field = {
-  id: string;
-  used: boolean;
-  model: Model<FieldModelValue>;
-  callback: (newValue: FieldModelValue) => void;
-};
-
-const data = [
-  {
-    id: "name",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#nameToChange")!.textContent = newValue),
-  },
-  {
-    id: "job",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#jobToChange")!.textContent = newValue),
-  },
-  {
-    id: "age",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#jobToChange")!.textContent = newValue),
-  },
-];
-
-class Form {
-  constructor(rootElement, options) {
-    this.rootElement = rootElement;
-    this.options = options;
-  }
-
-  toggleUsed(index) {
-    this.options[index].used = !this.options[index].used;
-  }
-
-  insertRaw(place, id) {
-    const div = element(
-      `<div class="form__raw">
-          <label for="parameter">Choose from the list:</label>
-          <select id="data-option" name="option">
-          ${this.unusedOptions().map((el) => {
-            return `<option value="job">${el.id}</option>`;
-          })}           
-          </select>
-      </div>`
-    );
-    place.insertAdjacentElement("beforebegin", div);
-    this.toggleUsed(this.findIndex(id));
-
-    div.addEventListener("input", (e) => {
-      console.log(`input id:${id} changed to:${e.target.value}`);
-    });
-  }
-
-  unusedOptions() {
-    return this.options.filter((el) => !el.used);
-  }
-
-  usedOptions() {
-    return this.options.filter((el) => el.used);
-  }
-
-  findIndex(id) {
-    return this.options.findIndex((el) => el.id === id);
-  }
-
-  getQuantityUnusedOptions() {
-    return this.unusedOptions().length;
-  }
-
-  deleteField(id) {
-    console.log(id, "id");
-    const collection = document.querySelectorAll(".form__raw");
-    collection[collection.length - 1].remove();
-    this.toggleUsed(this.findIndex(id));
-  }
-
-  changeFieldKey() {}
-
-  changeFieldValue() {}
-}
-
-/**
- * @param {String} HTML representing a single element
- * @return {Element}
- */
-function element(html) {
-  var template = document.createElement("template");
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template.content.firstChild;
-}
-
-const button = document.querySelector("button");
-const form = document.querySelector("form");
-const modal = document.querySelector(".main_cover");
-const formModel = new Form(form, data);
-const plusButton = document.querySelector(".form__plus");
-const minusButton = document.querySelector(".form__minus");
+const button = document.querySelector("button")!;
+const form = document.querySelector("form")!;
+const modal = document.querySelector(".main_cover")!;
+const formModel = new Form(form, data)!;
+const plusButton = document.querySelector(".form__plus")!;
+const minusButton = document.querySelector(".form__minus")!;
 
 button.addEventListener("click", () => {
   if (formModel.getQuantityUnusedOptions() >= 1) {
-    formModel.insertRaw(plusButton, formModel.unusedOptions()[0].id);
+    formModel.insertRaw(plusButton, formModel.unusedOptions()[0]!.name);
   }
   modal.classList.add("visible");
 });
 
 plusButton.addEventListener("click", () => {
   if (formModel.getQuantityUnusedOptions() >= 1) {
-    formModel.insertRaw(plusButton, formModel.unusedOptions()[0].id);
+    formModel.insertRaw(plusButton, formModel.unusedOptions()[0]!.name);
   }
 });
 
 minusButton.addEventListener("click", () => {
   const fieldsLength = formModel.getQuantityUnusedOptions();
-  const id = formModel.usedOptions()[fieldsLength - 1].id; //todo
+  const id = formModel.usedOptions()[fieldsLength - 1]!.name; //todo
   console.log(id, "id");
   formModel.deleteField(id);
 });
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", (e: any) => {
   e.preventDefault();
-  const option = form.option.value;
-  const optionValue = document.getElementsByName(option)[0].value;
+  //   const option = form.option.value;
+  //   const optionValue = document.getElementsByName(option)[0].value;
 
   // data
   //   .filter((el) => document.querySelector(`#${el.id}`).value)
