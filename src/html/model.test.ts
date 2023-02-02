@@ -1,4 +1,4 @@
-import Model from "./model";
+import Model from "../popup/model";
 
 describe("modelNumber", () => {
   const VALUE = 10;

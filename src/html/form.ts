@@ -1,40 +1,10 @@
 import Model from "./model.js";
 
-type FieldModelValue = { option: string; optionValue: string };
-
-type Field = {
-  id: string;
-  used: boolean;
-  model: Model<FieldModelValue>;
-  callback: (newValue: FieldModelValue) => void;
-};
-
-const data = [
-  {
-    id: "name",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#nameToChange")!.textContent = newValue),
-  },
-  {
-    id: "job",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#jobToChange")!.textContent = newValue),
-  },
-  {
-    id: "age",
-    used: false,
-    model: new Model({ option: "", optionValue: "" }),
-    callback: (newValue) =>
-      (document.querySelector("#jobToChange")!.textContent = newValue),
-  },
-];
-
 class Form {
-  constructor(rootElement, options) {
+  rootElement: HTMLElement;
+  options: string[];
+
+  constructor(rootElement: HTMLElement, options: string[]) {
     this.rootElement = rootElement;
     this.options = options;
   }
