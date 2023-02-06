@@ -27,3 +27,6 @@ class Model<T> {
 }
 
 export default Model;
+
+// todo derive one model from another, e.g.
+// `const derivedModel = originamModel.map(deriveFn)`;

@@ -1,57 +1,76 @@
-import type { Field } from "./data";
+import type { Field } from "./data.js";
+import Model from "./model.js";
 
 class Form {
   rootElement: HTMLElement;
-  options: Field[];
+  selectedOptions: Model<Set<string>>;
+  totalOptions: Field[];
 
-  constructor(rootElement: HTMLElement, options: Field[]) {
+  constructor(rootElement: HTMLElement, totalOptions: Field[]) {
     this.rootElement = rootElement;
-    this.options = options;
+    this.totalOptions = totalOptions;
+    this.selectedOptions = new Model(new Set());
   }
 
-  toggleUsed(index: number) {
-    this.options[index]!.used = !this.options[index]!.used;
+  getAvailableOptions() {
+    console.log(
+      this.totalOptions
+        .map((el) => el.name)
+        .filter((el) => !this.selectedOptions.get().has(el))
+    );
+    return this.totalOptions
+      .map((el) => el.name)
+      .filter((el) => !this.selectedOptions.get().has(el));
   }
 
-  insertRaw(place: Element, id: string) {
+  getOptions() {
+    return Array.from(this.selectedOptions.get());
+  }
+
+  deleteOption(name: string) {
+    this.selectedOptions.get().delete(name);
+    this.selectedOptions.trigger();
+  }
+
+  addOption(name: string) {
+    this.selectedOptions.get().add(name);
+    this.selectedOptions.trigger();
+  }
+
+  insertOptions() {}
+
+  insertRaw(place: Element) {
     const div = element(
       `<div class="form__raw">
           <label for="parameter">Choose from the list:</label>
           <select id="data-option" name="option">
-          ${this.unusedOptions().map((el) => {
-            return `<option value="job">${el.name}</option>`;
-          })}           
+         ${this.getAvailableOptions().map((optionName) => {
+           return `<option value=${optionName}>${optionName}</option>`;
+         })}           
           </select>
       </div>`
     );
+    this.addOption(this.getAvailableOptions()[0]!);
+
     place.insertAdjacentElement("beforebegin", div as Element);
-    this.toggleUsed(this.findIndex(id));
 
-    div!.addEventListener("input", (e: any) => {
-      console.log(`input id:${id} changed to:${e.target.value}`);
+    this.selectedOptions.onChange((newAvailableOptions) => {
+      console.log(newAvailableOptions, "newAvailableOptions");
+      // todo put newAvailableOptions into options
     });
-  }
-
-  unusedOptions() {
-    return this.options.filter((el) => !el.used);
-  }
-
-  usedOptions() {
-    return this.options.filter((el) => el.used);
-  }
-
-  findIndex(name: string) {
-    return this.options.findIndex((el) => el.name === name);
-  }
-
-  getQuantityUnusedOptions() {
-    return this.unusedOptions().length;
+    // div!.addEventListener("input", (e: any) => {
+    //   console.log(e);
+    //   this.addOption(name);
+    //   this.deleteOption(e.target.value);
+    //   console.log(this.availableOptions.get());
+    //   console.log(`input id:${name} changed to:${e.target.value}`);
+    // });
   }
 
   deleteField(name: string) {
     const collection = document.querySelectorAll(".form__raw");
+    this.addOption(name);
     collection[collection.length - 1]!.remove();
-    this.toggleUsed(this.findIndex(name));
   }
 
   changeFieldKey() {}

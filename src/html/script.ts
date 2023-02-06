@@ -7,25 +7,30 @@ const modal = document.querySelector(".main_cover")!;
 const formModel = new Form(form, data)!;
 const plusButton = document.querySelector(".form__plus")!;
 const minusButton = document.querySelector(".form__minus")!;
-
+// const allSelect = document.querySelectorAll("select")!;
 button.addEventListener("click", () => {
-  if (formModel.getQuantityUnusedOptions() >= 1) {
-    formModel.insertRaw(plusButton, formModel.unusedOptions()[0]!.name);
+  if (formModel.getOptions().length >= 1) {
+    formModel.insertRaw(plusButton);
   }
   modal.classList.add("visible");
 });
 
 plusButton.addEventListener("click", () => {
-  if (formModel.getQuantityUnusedOptions() >= 1) {
-    formModel.insertRaw(plusButton, formModel.unusedOptions()[0]!.name);
+  if (formModel.getAvailableOptions().length) {
+    formModel.insertRaw(plusButton);
+  } else {
+    plusButton.setAttribute("disabled", "");
   }
 });
 
 minusButton.addEventListener("click", () => {
-  const fieldsLength = formModel.getQuantityUnusedOptions();
-  const id = formModel.usedOptions()[fieldsLength - 1]!.name; //todo
-  console.log(id, "id");
-  formModel.deleteField(id);
+  if (formModel.getOptions().length <= 3) {
+    const rawLength = document.querySelectorAll("select").length;
+    const lastRaw = document.querySelectorAll("select")[rawLength - 1];
+    if (lastRaw) {
+      formModel.deleteField(lastRaw?.value);
+    }
+  }
 });
 
 form.addEventListener("submit", (e: any) => {
