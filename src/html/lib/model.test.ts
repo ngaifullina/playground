@@ -1,11 +1,11 @@
-import Model from "./model.js";
+import StateModel from "./model.js";
 
 describe("modelNumber", () => {
   const VALUE = 10;
   const VALUE_1 = 20;
   const VALUE_2 = 30;
 
-  const newModel = () => new Model(VALUE);
+  const newModel = () => new StateModel(VALUE);
 
   test("should return initial value", () => {
     const model = newModel();
@@ -43,7 +43,7 @@ describe("modelNumber", () => {
     describe("trigger", () => {
       test("supports manual internal mutable operation", () => {
         const callback = jest.fn(() => {});
-        const model = new Model([0]);
+        const model = new StateModel([0]);
         model.onChange(callback);
 
         // common use case: read, modify collection and save result
