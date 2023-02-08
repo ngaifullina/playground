@@ -147,53 +147,39 @@ body {
   font-size: 12px;
 }
 
-.form__plus {
+.form__control {
+  padding: 0;
   width: 20px;
   height: 20px;
   display: inline-block;
+  color: #0f1011;
+  border-color: #0f1011;
   background-color: white;
   cursor: pointer;
   position: relative;
   margin-right: 10px;
 }
 
-.form__plus:after {
-  content: "";
-  position: absolute;
-  transform: translate(-50%, -50%);
-  height: 2px;
-  width: 50%;
-  background-color: #243b55;
-  top: 50%;
-  left: 50%;
-}
-
-.form__plus:before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #243b55;
-  height: 50%;
-  width: 2px;
-}
-
-.form__plus:hover:before,
-.form__plus:hover:after {
-  background: #fff;
-  transition: 0.2s;
-}
-
-.form__plus:hover {
+.form__control:hover {
   background-color: #0f1011;
+  color: white;
   transition: 0.2s;
 }
 
-.form__minus:before {
-  content: none;
+.form__control:disabled {
+  pointer-events: none;
+}
+
+.form__control:after {
+  font-weight: bold;
+}
+
+.form__control_minus:after {
+  content: "-";
+}
+
+.form__control_plus:after {
+  content: "+";
 }
 
 .form__button {
@@ -217,4 +203,8 @@ body {
 
 .form__controls {
   display: inline-block;
+}
+
+.hide {
+  display: none;
 }
