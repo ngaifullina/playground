@@ -168,6 +168,9 @@ body {
 
 .form__control:disabled {
   pointer-events: none;
+  background-color: gray;
+  border: none;
+  color: wheat;
 }
 
 .form__control:after {

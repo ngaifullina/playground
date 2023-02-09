@@ -16,19 +16,26 @@ class ViewImpl implements View {
     options: string[],
     onSelect: (newValue: string) => void
   ): void {
+    if (options.length <= 1) {
+      this.plusButton.setAttribute("disabled", "");
+    }
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
     // todo type e
-    select.addEventListener("select", (e: any) => onSelect(e.target.value));
+    select.addEventListener("click", (e: any) => onSelect(e.target.value));
 
     options.map((o) => new Option(o, o)).forEach((o) => select.add(o));
-
-    const div = document.createElement("div");
-    div.classList.add("form__raw");
-    div.innerHTML = '<label for="parameter">Choose from the list:</label>';
+    const div = this.createRow();
     div.appendChild(select);
 
     this.container.appendChild(div);
+  }
+
+  private createRow() {
+    const div = document.createElement("div");
+    div.classList.add("form__raw");
+    div.innerHTML = '<label for="parameter">Choose from the list:</label>';
+    return div;
   }
 
   public deleteLastRow(): void {
@@ -40,7 +47,6 @@ class ViewImpl implements View {
   }
 
   public onPlusClick(cb: () => void): void {
-    // console.log(this.plusButton);
     this.plusButton.addEventListener("click", (e) => {
       e.preventDefault();
       cb();

@@ -1,6 +1,6 @@
 export type CalbackFn<T> = (newValue: T) => void;
 
-class StateModel<T> {
+class BaseModel<T> {
   private state: T;
   private callback: CalbackFn<T> = () => {};
 
@@ -26,7 +26,7 @@ class StateModel<T> {
   }
 }
 
-export default StateModel;
+export default BaseModel;
 
 // todo derive one model from another, e.g.
 // `const derivedModel = originamModel.map(deriveFn)`;

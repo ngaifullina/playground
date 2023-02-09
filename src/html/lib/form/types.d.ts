@@ -1,9 +1,11 @@
-export type FormRowState = {
+import type BaseModel from "../model.js";
+
+export type FormState = {
   option: string;
   // value: string;
-};
+}[];
 
-export type FormState = FormRowState[];
+export type Model = BaseModel<FormState>;
 
 export type Controller = {
   onSubmit(cb: (formState: FormState) => void);

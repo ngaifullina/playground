@@ -1,30 +1,38 @@
-import type { Controller, FormState, View } from "./types";
-import type Model from "./model";
+import type { Model, View, Controller, FormState } from "./types";
 
 class ControllerImpl implements Controller {
-  model;
-  view;
-
-  constructor(model: Model, view: View) {
-    this.model = model;
-    this.view = view;
-
+  constructor(
+    private options: string[],
+    private model: Model,
+    private view: View
+  ) {
     this.view.onPlusClick(() => this.insertRow());
   }
 
-  // ???
-  public onSubmit(cb: (formState: FormState) => void) {
-    this.view.onSubmit(() => cb([]));
+  public onSubmit(cb: (fs: FormState) => void) {
+    this.view.onSubmit(() => cb(this.model.get()));
   }
 
   private insertRow() {
-    const options = this.model.getAvailableOptions();
-
     const onSelect = (selectedOption: string) => {
       console.log(`Selected option ${selectedOption}`);
     };
+    const availableOptions = this.getAvailableOptions();
+    this.view.insertRow(availableOptions, onSelect);
+    if (availableOptions[0]) this.selectOption(availableOptions[0]);
+  }
 
-    this.view.insertRow(options, onSelect);
+  private selectOption(opt: string) {
+    this.model.get().push({ option: opt });
+    this.model.trigger();
+  }
+
+  private getAvailableOptions() {
+    const selectedOptions = this.model.get().map(({ option }) => option);
+
+    return this.options.filter(
+      (el) => selectedOptions.findIndex((option) => option === el) === -1
+    );
   }
 }
 
