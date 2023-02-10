@@ -12,9 +12,10 @@ export type Controller = {
 };
 
 export type View = {
-  insertRow(options: string[], onSelect: (newValue: string) => void): void;
+  insertRow(options: string[], onSelect: (option: string) => void): void;
+  // onClick(select: HTMLSelectElement): void;
   deleteLastRow(): void;
-  updateOptions(position: number, newOptions: string[]): void;
+  updateOptions(index: number, newOptions: string[]): void;
   onPlusClick(cb: () => void): void;
   onMinusClick(cb: () => void): void;
   onSubmit(cb: () => void): void;
