@@ -27,4 +27,10 @@ export const data: Field[] = [
     callback: (newValue: string) =>
       (document.querySelector("#jobToChange")!.textContent = newValue),
   },
+  {
+    name: "mail",
+    model: new BaseModel({ option: "", optionValue: "" }),
+    callback: (newValue: string) =>
+      (document.querySelector("#jobToChange")!.textContent = newValue),
+  },
 ];

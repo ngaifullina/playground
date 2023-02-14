@@ -14,16 +14,22 @@ class ControllerImpl implements Controller {
     this.view.onPlusClick(() => this.insertRow());
 
     this.model.onChange((formState) => {
+      console.log("model.onchange");
       const selectedOptions = formState.map(({ option }) => option);
 
       this.availableOptions = this.options.filter(
         (el) => selectedOptions.findIndex((option) => option === el) === -1
       );
+
       const calculatedRows = ControllerImpl.calculateRowOptionSets(
         this.options,
         formState.map(({ option }) => option)
       );
-      calculatedRows.forEach(this.view.updateOptions);
+      // this.view.insertRow();
+
+      calculatedRows.forEach((row, index) =>
+        this.view.updateOptions(row, index)
+      );
     });
   }
 
@@ -58,16 +64,15 @@ class ControllerImpl implements Controller {
    * @throws Error if no options left available
    */
   private insertRow(): void {
-    this.model.trigger();
     if (this.availableOptions[0]) {
-      const onSelect = (option: string) => {
-        console.log("onSelect", option, "-option");
-        // todo update all selects with new option sets here
-        // this.setOption(index, option);
-      };
-
-      this.view.insertRow(onSelect);
+      this.view.insertRow();
       this.addOption(this.availableOptions[0]!);
+
+      // const onSelect = (option: string) => {
+      //   console.log("onSelect", option, "-option");
+      //   // todo update all selects with new option sets here
+      //   // this.setOption(index, option);
+      // };
     } else {
       throw new Error(
         `Failed to insertRow: no options avalible,

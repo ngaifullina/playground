@@ -12,10 +12,10 @@ class ViewImpl implements View {
   // private formButton: HTMLButtonElement =
   //   document.querySelector(".form__button")!;
 
-  public insertRow(onSelect: (option: string) => void): void {
+  public insertRow(): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
-    select.addEventListener("change", (e: any) => onSelect(e.target.value));
+    // select.addEventListener("change", (e: any) => onSelect(e.target.value));
 
     const div = this.createRow();
     div.appendChild(select);
@@ -24,15 +24,28 @@ class ViewImpl implements View {
   }
 
   public updateOptions(newOptions: string[], index: number) {
-    console.log(newOptions, "newOptions");
-    // if (newOptions.length <= 1) {
-    //   this.plusButton.setAttribute("disabled", "");
-    // }
+    if (newOptions.length <= 1) {
+      this.plusButton.setAttribute("disabled", "");
+    }
+
     const selectCollection = document.querySelectorAll("select");
+    const arrOptions = Array.from(selectCollection[index]?.options!).map(
+      (option: any) => option.label
+    );
 
     newOptions
       .map((o) => new Option(o, o))
-      .forEach((o) => selectCollection[index]!.add(o));
+      .forEach((o) => {
+        if (!arrOptions.includes(o.value)) {
+          selectCollection[index]!.add(o);
+        }
+      });
+
+    arrOptions.forEach((el, i) => {
+      if (!newOptions.includes(el)) {
+        selectCollection[index]!.remove(i);
+      }
+    });
   }
 
   private createRow() {
