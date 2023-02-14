@@ -1,10 +1,10 @@
 import ControllerImpl from "./controller";
 
-describe("Form Controller", () =>
+describe("Form Controller", () => {
   test("calculateRowOptionSets", () => {
     const actual = ControllerImpl.calculateRowOptionSets(
       ["name", "age", "job", "email"],
-      [{ option: "age" }, { option: "email" }]
+      ["age", "email"]
     );
 
     const expected: string[][] = [
@@ -13,4 +13,18 @@ describe("Form Controller", () =>
     ];
 
     expect(actual).toEqual(expected);
-  }));
+  });
+  test("1", () => {
+    const a = ControllerImpl.calculateRowOptionSets(
+      ["name", "job", "age"],
+      ["name", "job"]
+    );
+
+    const e: string[][] = [
+      ["name", "age"],
+      ["job", "age"],
+    ];
+
+    expect(a).toEqual(e);
+  });
+});

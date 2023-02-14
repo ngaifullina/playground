@@ -1,7 +1,10 @@
 import type { Model, View, Controller, FormState } from "./types";
 
 class ControllerImpl implements Controller {
-  private availableOptions: string[];
+  private availableOptions: string[] = this.options;
+  // todo (low priority) maybe not make it a field? does anybody else use it?
+
+  private rowOptionSets: string[][] = [];
 
   constructor(
     private options: string[],
@@ -10,31 +13,22 @@ class ControllerImpl implements Controller {
   ) {
     this.view.onPlusClick(() => this.insertRow());
 
-    // todo optimize when implementing `value` update
-    // otherwise, this will trigger on every value change
-    this.availableOptions = options;
     this.model.onChange((formState) => {
-      this.availableOptions = this.options.filter(
-        (el) =>
-          formState
-            .map(({ option }) => option)
-            .findIndex((option) => option === el) === -1
-      );
-    });
+      const selectedOptions = formState.map(({ option }) => option);
 
-    // todo optimize when implementing `value` update
-    // otherwise, this will trigger on every value change
-    this.model.onChange((formState) => {
-      const rowOptionSets = ControllerImpl.calculateRowOptionSets(
-        this.options,
-        formState
+      this.availableOptions = this.options.filter(
+        (el) => selectedOptions.findIndex((option) => option === el) === -1
       );
-      // todo call updateOptions(index, options) for each row
+      const calculatedRows = ControllerImpl.calculateRowOptionSets(
+        this.options,
+        formState.map(({ option }) => option)
+      );
+      calculatedRows.forEach(this.view.updateOptions);
     });
   }
 
   /**
-   * @argument {string[]} options all available options
+   * @argument {string[]} allOptions all available options
    * @argument {FormState} formState FormState instance
    * @returns {string[][]} Array of arrays of available options for each select
    * Example:
@@ -45,25 +39,15 @@ class ControllerImpl implements Controller {
    * ]
    */
   public static calculateRowOptionSets(
-    options: string[],
-    formState: FormState
+    allOptions: string[],
+    selectedOptions: string[]
   ): string[][] {
-    const deleteElementsFromArray = (arrToDelete: string[], arr: string[]) => {
-      const indexes = arrToDelete.map((el) => arr.indexOf(el));
-      for (let i = 0; i < indexes.length; i++) {
-        arr = arr.filter((el) => arr.indexOf(el) !== indexes[i]);
-      }
-      return arr;
-    };
-
-    return formState
-      .map(({ option }) => option)
-      .map((option, _, arr) => {
-        return deleteElementsFromArray(
-          arr.filter((el) => el !== option),
-          options
-        );
-      });
+    const selectedOptionSet = new Set(selectedOptions);
+    return selectedOptions.map((selectedOption) =>
+      allOptions.filter(
+        (o) => o === selectedOption || !selectedOptionSet.has(o)
+      )
+    );
   }
 
   public onSubmit(cb: (fs: FormState) => void) {
@@ -74,46 +58,37 @@ class ControllerImpl implements Controller {
    * @throws Error if no options left available
    */
   private insertRow(): void {
+    this.model.trigger();
     if (this.availableOptions[0]) {
-      const index = this.options.length - this.availableOptions.length;
-
       const onSelect = (option: string) => {
-        console.log("onSelect");
+        console.log("onSelect", option, "-option");
         // todo update all selects with new option sets here
-        this.setOption(index, option);
-        // const selectOpt = Array.from(select.options).map((o) => o.label);
-        // selectOpt.forEach((opt) => {
-        //   if (selected.includes(opt) && opt !== selectOpt[selectedIndex]) {
-        //     select.remove(selectOpt.indexOf(opt));
-        //   }
-        // });
+        // this.setOption(index, option);
       };
 
-      this.view.insertRow(this.availableOptions, onSelect);
-      this.addOption(this.availableOptions[0]);
+      this.view.insertRow(onSelect);
+      this.addOption(this.availableOptions[0]!);
     } else {
-      throw new Error("Failed to insertRow: no options avalible");
+      throw new Error(
+        `Failed to insertRow: no options avalible,
+        ${this.rowOptionSets}`
+      );
     }
   }
 
-  private setOption(index: number, option: string): void {
-    console.log(`selected option ${option} at index ${index}`);
+  // private setOption(index: number, option: string): void {
 
-    // 1. Model([{ option: "name" }, { option: "job" }])
-    // 2. .setOption(1, "age")
-    // 3. Model([..., { option: "job" }]) -> Model([..., { option: "age" }])
-    // 4. ...???
+  //   // 1. Model([{ option: "name" }, { option: "job" }])
+  //   // 2. .setOption(1, "age")
+  //   // 3. Model([..., { option: "job" }]) -> Model([..., { option: "age" }])
+  //   // 4. ...???
 
-    // throw "todo";
-  }
+  //   // throw "todo";
+  // }
 
   private addOption(option: string) {
     this.model.get().push({ option });
     this.model.trigger();
-  }
-
-  private prepareOptionSets(): string[][] {
-    throw "todo";
   }
 
   // private deselectOption(name: string, option: string): void {

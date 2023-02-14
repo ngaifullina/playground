@@ -12,23 +12,27 @@ class ViewImpl implements View {
   // private formButton: HTMLButtonElement =
   //   document.querySelector(".form__button")!;
 
-  public insertRow(
-    options: string[],
-    onSelect: (newValue: string) => void
-  ): void {
-    if (options.length <= 1) {
-      this.plusButton.setAttribute("disabled", "");
-    }
+  public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
-    // todo type e
-    select.addEventListener("click", (e: any) => onSelect(e.target.value));
+    select.addEventListener("change", (e: any) => onSelect(e.target.value));
 
-    options.map((o) => new Option(o, o)).forEach((o) => select.add(o));
     const div = this.createRow();
     div.appendChild(select);
 
     this.container.appendChild(div);
+  }
+
+  public updateOptions(newOptions: string[], index: number) {
+    console.log(newOptions, "newOptions");
+    // if (newOptions.length <= 1) {
+    //   this.plusButton.setAttribute("disabled", "");
+    // }
+    const selectCollection = document.querySelectorAll("select");
+
+    newOptions
+      .map((o) => new Option(o, o))
+      .forEach((o) => selectCollection[index]!.add(o));
   }
 
   private createRow() {
@@ -40,10 +44,6 @@ class ViewImpl implements View {
 
   public deleteLastRow(): void {
     throw new Error("Method not implemented.");
-  }
-
-  public updateOptions(position: number, newOptions: string[]): void {
-    throw new Error(`${position} ${newOptions}`);
   }
 
   public onPlusClick(cb: () => void): void {
@@ -60,10 +60,6 @@ class ViewImpl implements View {
   public onSubmit(_: () => void): void {
     // throw new Error(`cb ${cb}`);
   }
-
-  // EXAMPLE
-  // public updateSelectOptions(position: number, newOptions: string[])
-  // public addOptionToSelect(position: number, newOption: string)
 }
 
 export default ViewImpl;
