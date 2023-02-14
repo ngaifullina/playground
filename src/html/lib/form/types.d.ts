@@ -12,8 +12,7 @@ export type Controller = {
 };
 
 export type View = {
-  insertRow(): void;
-  // insertRow(onSelect: (option: string) => void): void;
+  insertRow(onSelect: (option: string) => void): void;
   // onClick(select: HTMLSelectElement): void;
   deleteLastRow(): void;
   updateOptions(newOptions: string[], index: number): void;

@@ -6,16 +6,16 @@ class ViewImpl implements View {
   )!;
 
   private container: HTMLDivElement = document.querySelector(".form__fields")!;
-
-  // private minusButton: HTMLButtonElement =
-  //   document.querySelector(".form__minus")!;
+  private minusButton: HTMLButtonElement = document.querySelector(
+    ".form__control_minus"
+  )!;
   // private formButton: HTMLButtonElement =
   //   document.querySelector(".form__button")!;
 
-  public insertRow(): void {
+  public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
-    // select.addEventListener("change", (e: any) => onSelect(e.target.value));
+    select.addEventListener("change", (e: any) => onSelect(e.target.value));
 
     const div = this.createRow();
     div.appendChild(select);
@@ -26,6 +26,8 @@ class ViewImpl implements View {
   public updateOptions(newOptions: string[], index: number) {
     if (newOptions.length <= 1) {
       this.plusButton.setAttribute("disabled", "");
+    } else {
+      this.plusButton.removeAttribute("disabled");
     }
 
     const selectCollection = document.querySelectorAll("select");
@@ -50,13 +52,15 @@ class ViewImpl implements View {
 
   private createRow() {
     const div = document.createElement("div");
-    div.classList.add("form__raw");
+    div.classList.add("form__row");
     div.innerHTML = '<label for="parameter">Choose from the list:</label>';
     return div;
   }
 
   public deleteLastRow(): void {
-    throw new Error("Method not implemented.");
+    const rows = document.querySelectorAll(".form__row");
+    const numberRows = rows.length;
+    rows[numberRows - 1]?.remove();
   }
 
   public onPlusClick(cb: () => void): void {
@@ -65,9 +69,11 @@ class ViewImpl implements View {
       cb();
     });
   }
-
   public onMinusClick(cb: () => void): void {
-    throw new Error(`cb ${cb}`);
+    this.minusButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      cb();
+    });
   }
 
   public onSubmit(_: () => void): void {

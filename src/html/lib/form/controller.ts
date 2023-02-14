@@ -12,9 +12,10 @@ class ControllerImpl implements Controller {
     private view: View
   ) {
     this.view.onPlusClick(() => this.insertRow());
+    this.view.onMinusClick(() => this.deleteLastRow());
 
     this.model.onChange((formState) => {
-      console.log("model.onchange");
+      // console.log("model.onchange", formState, "-formState");
       const selectedOptions = formState.map(({ option }) => option);
 
       this.availableOptions = this.options.filter(
@@ -65,20 +66,24 @@ class ControllerImpl implements Controller {
    */
   private insertRow(): void {
     if (this.availableOptions[0]) {
-      this.view.insertRow();
+      const onSelect = (option: string) => {
+        console.log("onSelect", option, "-option");
+        // todo update all selects with new option sets here
+        // this.setOption(index, option);
+      };
+      this.view.insertRow(onSelect);
       this.addOption(this.availableOptions[0]!);
-
-      // const onSelect = (option: string) => {
-      //   console.log("onSelect", option, "-option");
-      //   // todo update all selects with new option sets here
-      //   // this.setOption(index, option);
-      // };
     } else {
       throw new Error(
         `Failed to insertRow: no options avalible,
         ${this.rowOptionSets}`
       );
     }
+  }
+
+  private deleteLastRow(): void {
+    this.deselectOption();
+    this.view.deleteLastRow();
   }
 
   // private setOption(index: number, option: string): void {
@@ -96,10 +101,10 @@ class ControllerImpl implements Controller {
     this.model.trigger();
   }
 
-  // private deselectOption(name: string, option: string): void {
-  //   const index = this.model.get();
-  //   this.selectedOptions.trigger();
-  // }
+  private deselectOption(): void {
+    this.model.get().pop();
+    this.model.trigger();
+  }
 }
 
 export default ControllerImpl;
