@@ -1,4 +1,5 @@
 import type { View } from "./types";
+import { Button } from "./controller.js";
 
 class ViewImpl implements View {
   private plusButton: HTMLButtonElement = document.querySelector(
@@ -12,6 +13,10 @@ class ViewImpl implements View {
   // private formButton: HTMLButtonElement =
   //   document.querySelector(".form__button")!;
 
+  private defineButton(button: Button): HTMLButtonElement {
+    return button === Button.Minus ? this.minusButton : this.plusButton;
+  }
+
   public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
@@ -23,13 +28,11 @@ class ViewImpl implements View {
     this.container.appendChild(div);
   }
 
-  public updateOptions(newOptions: string[], index: number) {
-    if (newOptions.length <= 1) {
-      this.plusButton.setAttribute("disabled", "");
-    } else {
-      this.plusButton.removeAttribute("disabled");
-    }
+  toggleButtonActivity(button: Button, value: boolean) {
+    this.defineButton(button).disabled = value;
+  }
 
+  public setOptions(newOptions: string[], index: number) {
     const selectCollection = document.querySelectorAll("select");
     const arrOptions = Array.from(selectCollection[index]?.options!).map(
       (option: any) => option.label
@@ -63,14 +66,8 @@ class ViewImpl implements View {
     rows[numberRows - 1]?.remove();
   }
 
-  public onPlusClick(cb: () => void): void {
-    this.plusButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      cb();
-    });
-  }
-  public onMinusClick(cb: () => void): void {
-    this.minusButton.addEventListener("click", (e) => {
+  public onClick(button: Button, cb: () => void): void {
+    this.defineButton(button).addEventListener("click", (e) => {
       e.preventDefault();
       cb();
     });

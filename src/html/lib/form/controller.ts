@@ -1,9 +1,12 @@
 import type { Model, View, Controller, FormState } from "./types";
+export enum Button {
+  Plus,
+  Minus,
+}
 
 class ControllerImpl implements Controller {
   private availableOptions: string[] = this.options;
   // todo (low priority) maybe not make it a field? does anybody else use it?
-
   private rowOptionSets: string[][] = [];
 
   constructor(
@@ -11,11 +14,10 @@ class ControllerImpl implements Controller {
     private model: Model,
     private view: View
   ) {
-    this.view.onPlusClick(() => this.insertRow());
-    this.view.onMinusClick(() => this.deleteLastRow());
+    this.view.onClick(Button.Plus, () => this.insertRow());
+    this.view.onClick(Button.Minus, () => this.deleteLastRow());
 
     this.model.onChange((formState) => {
-      // console.log("model.onchange", formState, "-formState");
       const selectedOptions = formState.map(({ option }) => option);
 
       this.availableOptions = this.options.filter(
@@ -26,11 +28,15 @@ class ControllerImpl implements Controller {
         this.options,
         formState.map(({ option }) => option)
       );
-      // this.view.insertRow();
+      calculatedRows.forEach((row, index) => {
+        this.view.toggleButtonActivity(Button.Plus, row.length <= 1);
+        this.view.toggleButtonActivity(
+          Button.Minus,
+          row.length === this.options.length
+        );
 
-      calculatedRows.forEach((row, index) =>
-        this.view.updateOptions(row, index)
-      );
+        this.view.setOptions(row, index);
+      });
     });
   }
 
@@ -45,6 +51,7 @@ class ControllerImpl implements Controller {
    *   ["age"]
    * ]
    */
+
   public static calculateRowOptionSets(
     allOptions: string[],
     selectedOptions: string[]
@@ -64,6 +71,7 @@ class ControllerImpl implements Controller {
   /**
    * @throws Error if no options left available
    */
+
   private insertRow(): void {
     if (this.availableOptions[0]) {
       const onSelect = (option: string) => {
@@ -86,16 +94,6 @@ class ControllerImpl implements Controller {
     this.view.deleteLastRow();
   }
 
-  // private setOption(index: number, option: string): void {
-
-  //   // 1. Model([{ option: "name" }, { option: "job" }])
-  //   // 2. .setOption(1, "age")
-  //   // 3. Model([..., { option: "job" }]) -> Model([..., { option: "age" }])
-  //   // 4. ...???
-
-  //   // throw "todo";
-  // }
-
   private addOption(option: string) {
     this.model.get().push({ option });
     this.model.trigger();
@@ -105,6 +103,13 @@ class ControllerImpl implements Controller {
     this.model.get().pop();
     this.model.trigger();
   }
+
+  // private setOption(index: number, option: string): void {
+  //   // 1. Model([{ option: "name" }, { option: "job" }])
+  //   // 2. .setOption(1, "age")
+  //   // 3. Model([..., { option: "job" }]) -> Model([..., { option: "age" }])
+  //   // 4. ...???
+  // }
 }
 
 export default ControllerImpl;

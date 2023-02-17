@@ -1,4 +1,5 @@
 import type BaseModel from "../model.js";
+import { Button } from "./controller";
 
 export type FormState = {
   option: string;
@@ -12,11 +13,16 @@ export type Controller = {
 };
 
 export type View = {
+  toggleButtonActivity(button: Button, value: boolean): void;
   insertRow(onSelect: (option: string) => void): void;
   // onClick(select: HTMLSelectElement): void;
   deleteLastRow(): void;
-  updateOptions(newOptions: string[], index: number): void;
-  onPlusClick(cb: () => void): void;
-  onMinusClick(cb: () => void): void;
+  setOptions(newOptions: string[], index: number): void;
+  onClick(button: Button, cb: () => void): void;
   onSubmit(cb: () => void): void;
 };
+
+// export enum Button {
+//   Plus,
+//   Minus,
+// }
