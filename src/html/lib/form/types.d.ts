@@ -8,12 +8,18 @@ export type FormState = {
 
 export type Model = BaseModel<FormState>;
 
+// todo
+// export type Model2 = {
+//   setOption(option: string, index: number): void;
+//   deleteLastRow(): void;
+// };
+
 export type Controller = {
   onSubmit(cb: (formState: FormState) => void);
 };
 
 export type View = {
-  toggleButtonActivity(button: Button, value: boolean): void;
+  updateButtonState(button: Button, activeState: boolean): void;
   insertRow(onSelect: (option: string) => void): void;
   // onClick(select: HTMLSelectElement): void;
   deleteLastRow(): void;
@@ -21,8 +27,3 @@ export type View = {
   onClick(button: Button, cb: () => void): void;
   onSubmit(cb: () => void): void;
 };
-
-// export enum Button {
-//   Plus,
-//   Minus,
-// }

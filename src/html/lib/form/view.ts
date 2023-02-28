@@ -20,37 +20,30 @@ class ViewImpl implements View {
   public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
 
-    select.addEventListener("change", (e: any) => onSelect(e.target.value));
+    select.addEventListener("change", (e: any) => {
+      onSelect(e.target.value);
+    });
 
     const div = this.createRow();
     div.appendChild(select);
-
     this.container.appendChild(div);
   }
 
-  toggleButtonActivity(button: Button, value: boolean) {
+  updateButtonState(button: Button, value: boolean) {
     this.defineButton(button).disabled = value;
   }
 
-  public setOptions(newOptions: string[], index: number) {
-    const selectCollection = document.querySelectorAll("select");
-    const arrOptions = Array.from(selectCollection[index]?.options!).map(
-      (option: any) => option.label
-    );
+  public setOptions(newOptions: string[], index: number): void {
+    const select = this.container.querySelectorAll("select")[index]!;
+    while (select.length) {
+      select.remove(0);
+    }
 
     newOptions
       .map((o) => new Option(o, o))
       .forEach((o) => {
-        if (!arrOptions.includes(o.value)) {
-          selectCollection[index]!.add(o);
-        }
+        select.add(o);
       });
-
-    arrOptions.forEach((el, i) => {
-      if (!newOptions.includes(el)) {
-        selectCollection[index]!.remove(i);
-      }
-    });
   }
 
   private createRow() {

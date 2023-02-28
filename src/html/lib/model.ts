@@ -12,16 +12,16 @@ class BaseModel<T> {
     return this.state;
   }
 
-  public set(newValue: T) {
+  public set(newValue: T): void {
     this.state = newValue;
     this.trigger();
   }
 
-  public trigger() {
+  public trigger(): void {
     this.callback(this.state);
   }
 
-  public onChange(callback: CalbackFn<T>) {
+  public onChange(callback: CalbackFn<T>): void {
     this.callback = callback;
   }
 }
