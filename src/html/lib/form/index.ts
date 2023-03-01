@@ -1,9 +1,11 @@
 import BaseModel from "../model.js";
+
+import ModelImpl from "./model.js";
 import ViewImpl from "./view.js";
 import ControllerImpl from "./controller.js";
 
 import type { FormState } from "./types";
-export { FormState };
+export type { FormState };
 
 export function open(
   options: string[],
@@ -11,8 +13,8 @@ export function open(
 ) {
   const c = new ControllerImpl(
     options,
-    new BaseModel([] as FormState),
-    new ViewImpl()
+    new ModelImpl(new BaseModel<FormState>([])),
+    new ViewImpl(document.querySelector(".popup")!)
   );
 
   c.onSubmit(onSubmit);

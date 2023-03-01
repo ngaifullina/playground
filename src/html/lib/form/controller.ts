@@ -1,8 +1,4 @@
-import type { Model, View, Controller, FormState } from "./types";
-export enum Button {
-  Plus,
-  Minus,
-}
+import type { Controller, FormState, Model, View } from "./types";
 
 class ControllerImpl implements Controller {
   private calculatedRows: string[][] = [];
@@ -12,9 +8,9 @@ class ControllerImpl implements Controller {
     private view: View // private calculatedRows: string[][]
   ) {
     this.calculatedRows[0] = this.options;
-    this.view.onClick(Button.Plus, () => this.insertRow());
-    this.view.onClick(Button.Minus, () => this.deleteLastRow());
 
+    this.view.onClick("+", () => this.insertRow());
+    this.view.onClick("-", () => this.deleteLastRow());
     this.model.onChange((fs) => this.updateOptions(fs));
   }
 
@@ -29,7 +25,6 @@ class ControllerImpl implements Controller {
    *   ["age"]
    * ]
    */
-
   public static calculateRowOptionSets(
     allOptions: string[],
     selectedOptions: string[]
@@ -46,11 +41,14 @@ class ControllerImpl implements Controller {
       ControllerImpl.getOptions(newFormState)
     );
     this.calculatedRows.forEach((row, index) => {
-      this.view.updateButtonState(Button.Plus, row.length <= 1);
-      this.view.updateButtonState(
-        Button.Minus,
-        row.length === this.options.length
-      );
+      row.length <= 1
+        ? this.view.disableButton("+")
+        : this.view.enableButton("+");
+
+      row.length === this.options.length
+        ? this.view.disableButton("-")
+        : this.view.enableButton("-");
+
       this.view.setOptions(row, index);
     });
   }
@@ -78,19 +76,16 @@ class ControllerImpl implements Controller {
     }
 
     const index = formState.length;
-    const updateModelWith = (newOption: string) => {
-      this.model.get()[index] = { option: newOption };
-      this.model.trigger();
-    };
 
-    this.view.insertRow(updateModelWith);
+    this.view.insertRow((nextOptionToSelect) =>
+      this.model.setOption(nextOptionToSelect, index)
+    );
 
-    updateModelWith(nextOptionToSelect);
+    this.model.setOption(nextOptionToSelect, index);
   }
 
   private deleteLastRow(): void {
-    this.model.get().pop();
-    this.model.trigger();
+    this.model.trimLast();
     this.view.deleteLastRow();
   }
 }
