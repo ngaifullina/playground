@@ -1,4 +1,4 @@
-import BaseModel from "./model.js";
+import BaseModel from "./model";
 
 describe("modelNumber", () => {
   const VALUE = 10;
@@ -54,6 +54,24 @@ describe("modelNumber", () => {
 
         expect(model.get()).not.toEqual([0]);
         expect(callback).toBeCalledTimes(1);
+      });
+
+      test.skip("supports more than one concurrent onChange subscription", () => {
+        const model = new BaseModel(null);
+
+        const callback = jest.fn(() => {});
+        const callback2 = jest.fn(() => {});
+        const callback3 = jest.fn(() => {});
+
+        model.onChange(callback);
+        model.onChange(callback2);
+        model.onChange(callback3);
+
+        model.trigger();
+
+        expect(callback).toBeCalledTimes(1);
+        expect(callback2).toBeCalledTimes(1);
+        expect(callback3).toBeCalledTimes(1);
       });
     });
   });
