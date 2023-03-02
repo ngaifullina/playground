@@ -2,7 +2,8 @@ export type CalbackFn<T> = (newValue: T) => void;
 
 class BaseModel<T> {
   private state: T;
-  private callback: CalbackFn<T> = () => {};
+  private callback: CalbackFn<T> = BaseModel.defaultCallback<T>;
+  private static defaultCallback<T>(_: T) {}
 
   constructor(initial: T) {
     this.state = initial;
@@ -23,6 +24,10 @@ class BaseModel<T> {
 
   public onChange(callback: CalbackFn<T>): void {
     this.callback = callback;
+  }
+
+  public unsubscribe(): void {
+    this.callback = BaseModel.defaultCallback<T>;
   }
 }
 

@@ -75,4 +75,18 @@ describe("modelNumber", () => {
       });
     });
   });
+  describe("unsubscribe", () => {
+    test("callback should not be called after", () => {
+      const model = new BaseModel(null);
+      const callback = jest.fn(() => {});
+      model.onChange(callback);
+      model.trigger();
+      expect(callback).toBeCalledTimes(1);
+
+      model.unsubscribe();
+      model.trigger();
+
+      expect(callback).toBeCalledTimes(1);
+    });
+  });
 });
