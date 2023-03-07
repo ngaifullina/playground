@@ -12,6 +12,7 @@ class ControllerImpl implements Controller {
     this.view.onClick("+", () => this.insertRow());
     this.view.onClick("-", () => this.deleteLastRow());
     this.model.onChange((fs) => this.updateOptions(fs));
+    this.model.onChange((fs) => console.log(fs));
   }
 
   /**
