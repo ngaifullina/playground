@@ -1,8 +1,17 @@
 import type { Controller, FormState, Model, View } from "./types";
 
-class ControllerImpl implements Controller {
+export class ControllerImpl implements Controller {
   private calculatedRows: string[][] = [];
-  constructor(
+
+  public static create(
+    options: string[],
+    model: Model,
+    view: View
+  ): Controller {
+    return new ControllerImpl(options, model, view);
+  }
+
+  private constructor(
     private readonly options: string[],
     private model: Model,
     private view: View // private calculatedRows: string[][]
@@ -12,7 +21,6 @@ class ControllerImpl implements Controller {
     this.view.onClick("+", () => this.insertRow());
     this.view.onClick("-", () => this.deleteLastRow());
     this.model.onChange((fs) => this.updateOptions(fs));
-    this.model.onChange((fs) => console.log(fs));
   }
 
   /**
@@ -89,6 +97,5 @@ class ControllerImpl implements Controller {
     this.model.trimLast();
     this.view.deleteLastRow();
   }
+  close(): void {}
 }
-
-export default ControllerImpl;

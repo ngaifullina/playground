@@ -1,4 +1,4 @@
-import ControllerImpl from "./controller";
+import { ControllerImpl } from "./controller";
 
 describe("Form Controller", () => {
   test("calculateRowOptionSets", () => {

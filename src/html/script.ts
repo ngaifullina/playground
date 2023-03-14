@@ -18,6 +18,7 @@ const onSubmit = (formState: FormState) => {
 openFormButton.addEventListener("click", () => {
   formPopup.classList.add("visible");
   openForm(
+    document.querySelector(".popup")!,
     data.map(({ name }) => name),
     onSubmit
   );

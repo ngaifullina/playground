@@ -1,8 +1,12 @@
 import type { default as BaseModel, CalbackFn } from "../model";
 import type { FormState, Model } from "./types";
 
-class ModelImpl implements Model {
-  constructor(private model: BaseModel<FormState>) {}
+export class ModelImpl implements Model {
+  public static create(model: BaseModel<FormState>): Model {
+    return new ModelImpl(model);
+  }
+
+  private constructor(private model: BaseModel<FormState>) {}
 
   public get() {
     return this.model.get();
@@ -22,5 +26,3 @@ class ModelImpl implements Model {
     this.model.onChange(callback);
   }
 }
-
-export default ModelImpl;

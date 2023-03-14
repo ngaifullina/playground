@@ -1,21 +1,56 @@
-import type { View, Direction } from "./types";
+import type { View, Direction, CloseFn } from "./types";
 
-class ViewImpl implements View {
+// todo inheritance solution
+// todo: separate classes solution
+// todo function solution
+
+const FORM_ROW = ".form__row";
+const FORM_FIELDS = ".form__fields";
+const FORM_CONTROL_PLUS = ".form__control_plus";
+const FORM_CONTROL_MINUS = ".form__control_minus";
+
+// class solution
+// class ViewLifecycle implements Lifecycle {
+//   constructor(private root: HTMLElement) {}
+
+//   public close(): void {
+//     this.root.querySelector(FORM_FIELDS)!.innerHTML = "";
+//   }
+// }
+
+// // function solution
+// function viewLifecycle(root: HTMLElement): Lifecycle {
+//   return {
+//     close: () => {
+//       root.querySelector(FORM_FIELDS)!.innerHTML = "";
+//     },
+//   };
+// }
+
+export class ViewImpl implements View {
   private readonly container: HTMLDivElement;
   private readonly buttons: Record<Direction, HTMLButtonElement>;
   private readonly form: HTMLFormElement;
 
-  constructor(root: HTMLElement) {
-    this.container = root.querySelector(".form__fields")!;
+  public static create(root: HTMLElement): [View, CloseFn] {
+    if (root.querySelector(FORM_ROW)) {
+      throw new Error("Failed to create View(root): root is not empty");
+    }
+
+    return [
+      new ViewImpl(root),
+      () => (root.querySelector(FORM_FIELDS)!.innerHTML = ""),
+    ];
+  }
+
+  private constructor(root: HTMLElement) {
+    this.container = root.querySelector(FORM_FIELDS)!;
     this.buttons = {
-      "+": root.querySelector(".form__control_plus")!,
-      "-": root.querySelector(".form__control_minus")!,
+      "+": root.querySelector(FORM_CONTROL_PLUS)!,
+      "-": root.querySelector(FORM_CONTROL_MINUS)!,
     };
     this.form = root.querySelector(".form")!;
   }
-
-  // private formButton: HTMLButtonElement =
-  //   document.querySelector(".form__button")!;
 
   public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
@@ -39,7 +74,7 @@ class ViewImpl implements View {
 
   public setOptions(newOptions: string[], index: number): void {
     const select = this.container.querySelectorAll("select")[index]!;
-    const selectedItem = select.options[select.selectedIndex]?.text;
+
     while (select.length) {
       select.remove(0);
     }
@@ -49,7 +84,7 @@ class ViewImpl implements View {
       .forEach((o) => {
         select.add(o);
       });
-    if (selectedItem) select.value = selectedItem;
+    select.value = select.options[select.selectedIndex]?.text || "";
   }
 
   private createRow() {
@@ -60,7 +95,7 @@ class ViewImpl implements View {
   }
 
   public deleteLastRow(): void {
-    const rows = this.container.querySelectorAll(".form__row");
+    const rows = this.container.querySelectorAll(FORM_ROW);
     const numberRows = rows.length;
     rows[numberRows - 1]?.remove();
   }
@@ -79,5 +114,3 @@ class ViewImpl implements View {
     });
   }
 }
-
-export default ViewImpl;

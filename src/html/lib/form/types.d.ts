@@ -3,6 +3,12 @@ export type FormState = {
   // value: string;
 }[];
 
+export type CloseFn = () => void;
+
+// export type Lifecycle = {
+//   close(): void;
+// };
+
 export type Model = {
   get(): FormState;
   trimLast(): void;
