@@ -1,45 +1,34 @@
 import type { View, Direction, CloseFn } from "./types";
 
-// todo inheritance solution
-// todo: separate classes solution
-// todo function solution
-
 const FORM_ROW = ".form__row";
 const FORM_FIELDS = ".form__fields";
 const FORM_CONTROL_PLUS = ".form__control_plus";
 const FORM_CONTROL_MINUS = ".form__control_minus";
 
-// class solution
-// class ViewLifecycle implements Lifecycle {
-//   constructor(private root: HTMLElement) {}
-
-//   public close(): void {
-//     this.root.querySelector(FORM_FIELDS)!.innerHTML = "";
-//   }
-// }
-
-// // function solution
-// function viewLifecycle(root: HTMLElement): Lifecycle {
-//   return {
-//     close: () => {
-//       root.querySelector(FORM_FIELDS)!.innerHTML = "";
-//     },
-//   };
-// }
+type Listener = (e: any) => void;
 
 export class ViewImpl implements View {
   private readonly container: HTMLDivElement;
-  private readonly buttons: Record<Direction, HTMLButtonElement>;
   private readonly form: HTMLFormElement;
+  private readonly buttons: Record<Direction, HTMLButtonElement>;
+  private readonly buttonCallbacks: Record<Direction, Listener[]> = {
+    "+": [],
+    "-": [],
+  };
 
   public static create(root: HTMLElement): [View, CloseFn] {
     if (root.querySelector(FORM_ROW)) {
       throw new Error("Failed to create View(root): root is not empty");
     }
 
+    const v = new ViewImpl(root);
+
     return [
-      new ViewImpl(root),
-      () => (root.querySelector(FORM_FIELDS)!.innerHTML = ""),
+      v,
+      () => {
+        root.querySelector(FORM_FIELDS)!.innerHTML = "";
+        v.close();
+      },
     ];
   }
 
@@ -74,6 +63,8 @@ export class ViewImpl implements View {
 
   public setOptions(newOptions: string[], index: number): void {
     const select = this.container.querySelectorAll("select")[index]!;
+    if (!select) return;
+    const selected = select?.value;
 
     while (select.length) {
       select.remove(0);
@@ -84,14 +75,10 @@ export class ViewImpl implements View {
       .forEach((o) => {
         select.add(o);
       });
-    select.value = select.options[select.selectedIndex]?.text || "";
-  }
 
-  private createRow() {
-    const div = document.createElement("div");
-    div.classList.add("form__row");
-    div.innerHTML = '<label for="parameter">Choose from the list:</label>';
-    return div;
+    if (selected && newOptions.includes(selected)) {
+      select.value = selected;
+    }
   }
 
   public deleteLastRow(): void {
@@ -101,16 +88,38 @@ export class ViewImpl implements View {
   }
 
   public onClick(direction: Direction, cb: () => void): void {
-    this.buttons[direction].addEventListener("click", (e) => {
+    const fn = (e: any) => {
       e.preventDefault();
       cb();
-    });
+    };
+
+    this.buttonCallbacks[direction].push(fn);
+    this.buttons[direction].addEventListener("click", fn);
   }
 
   public onSubmit(cb: () => void): void {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
+      this.getButtonsCallbacks().forEach((fn) => fn(e));
       cb();
     });
+  }
+
+  private createRow(): HTMLDivElement {
+    const div = document.createElement("div");
+    div.classList.add("form__row");
+    div.innerHTML = '<label for="parameter">Choose from the list:</label>';
+    return div;
+  }
+
+  private close(): void {
+    this.getButtonsCallbacks().forEach((fn) => {
+      this.buttons["+"].removeEventListener("click", fn);
+      this.buttons["-"].removeEventListener("click", fn);
+    });
+  }
+
+  private getButtonsCallbacks(): Listener[] {
+    return this.buttonCallbacks["+"].concat(this.buttonCallbacks["-"]);
   }
 }

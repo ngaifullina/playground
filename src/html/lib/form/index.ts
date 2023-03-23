@@ -12,11 +12,12 @@ export function open(
   options: string[],
   onSubmit: (formState: FormState) => void
 ) {
-  const model = ModelImpl.create(new BaseModel<FormState>([]));
+  const [model, closeModel] = ModelImpl.create(new BaseModel<FormState>([]));
   const [view, closeView] = ViewImpl.create(root);
   const controller = ControllerImpl.create(options, model, view);
   controller.onSubmit((fs) => {
     onSubmit(fs);
+    closeModel();
     closeView();
   });
 }

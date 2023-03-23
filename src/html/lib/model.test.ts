@@ -75,34 +75,4 @@ describe("modelNumber", () => {
       });
     });
   });
-  describe("unsubscribe", () => {
-    test("callback should not be called after", () => {
-      const model = new BaseModel(null);
-      const callback = jest.fn(() => {});
-      const callbackId = model.onChange(callback);
-      model.trigger();
-      expect(callback).toBeCalledTimes(1);
-
-      model.unsubscribe(callbackId);
-      model.trigger();
-
-      expect(callback).toBeCalledTimes(1);
-    });
-
-    test("callback should not be called after", () => {
-      const model = new BaseModel(null);
-      const callback = jest.fn(() => {});
-      const callback2 = jest.fn(() => {});
-
-      const callbackId = model.onChange(callback);
-      model.onChange(callback2);
-
-      model.trigger();
-
-      model.unsubscribe(callbackId);
-      model.trigger();
-      expect(callback).toBeCalledTimes(1);
-      expect(callback2).toBeCalledTimes(2);
-    });
-  });
 });

@@ -1,10 +1,17 @@
 import type { default as BaseModel, CalbackFn } from "../model";
-import type { FormState, Model } from "./types";
+import type { FormState, Model, CloseFn } from "./types";
 
 export class ModelImpl implements Model {
-  public static create(model: BaseModel<FormState>): Model {
-    return new ModelImpl(model);
+  public static create(model: BaseModel<FormState>): [Model, CloseFn] {
+    if (model.get().length > 0) {
+      throw new Error("Non-empty model found");
+    }
+
+    const m = new ModelImpl(model);
+    return [m, () => m.close()];
   }
+
+  private cancelHandlers: CloseFn[] = [];
 
   private constructor(private model: BaseModel<FormState>) {}
 
@@ -23,6 +30,11 @@ export class ModelImpl implements Model {
   }
 
   public onChange(callback: CalbackFn<FormState>): void {
-    this.model.onChange(callback);
+    this.cancelHandlers.push(this.model.onChange(callback));
+  }
+
+  private close() {
+    this.cancelHandlers.forEach((fn) => fn());
+    this.model.set([]);
   }
 }

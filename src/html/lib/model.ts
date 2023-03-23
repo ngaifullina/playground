@@ -1,10 +1,9 @@
 export type CalbackFn<T> = (newValue: T) => void;
-
-export type SubscriptionId = symbol;
+export type CancelFn = () => void;
 
 class BaseModel<T> {
   private state: T;
-  private callbacks: Map<symbol, CalbackFn<T>> = new Map();
+  private callbacks: Set<CalbackFn<T>> = new Set();
 
   constructor(initial: T) {
     this.state = initial;
@@ -23,14 +22,12 @@ class BaseModel<T> {
     this.callbacks.forEach((cb) => cb(this.state));
   }
 
-  public onChange(callback: CalbackFn<T>): SubscriptionId {
-    const id = Symbol();
-    this.callbacks.set(id, callback);
-    return id;
-  }
+  public onChange(callback: CalbackFn<T>): CancelFn {
+    this.callbacks.add(callback);
 
-  public unsubscribe(subscriptionId: SubscriptionId): void {
-    this.callbacks.delete(subscriptionId);
+    return () => {
+      this.callbacks.delete(callback);
+    };
   }
 }
 
