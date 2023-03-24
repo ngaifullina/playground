@@ -43,6 +43,7 @@ export class ViewImpl implements View {
 
   public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
+    const input = document.createElement("INPUT") as HTMLInputElement;
 
     select.addEventListener("change", (e: any) => {
       onSelect(e.target.value);
@@ -50,6 +51,7 @@ export class ViewImpl implements View {
 
     const div = this.createRow();
     div.appendChild(select);
+    div.appendChild(input);
     this.container.appendChild(div);
   }
 

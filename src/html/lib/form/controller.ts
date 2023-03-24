@@ -97,5 +97,4 @@ export class ControllerImpl implements Controller {
     this.model.trimLast();
     this.view.deleteLastRow();
   }
-  close(): void {}
 }

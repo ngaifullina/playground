@@ -16,9 +16,11 @@ export function open(
   const [view, closeView] = ViewImpl.create(root);
   const controller = ControllerImpl.create(options, model, view);
   controller.onSubmit((fs) => {
-    onSubmit(fs);
-    closeModel();
-    closeView();
+    if (fs.length > 0) {
+      onSubmit(fs);
+      closeModel();
+      closeView();
+    }
   });
 }
 
