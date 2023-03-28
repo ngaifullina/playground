@@ -114,38 +114,12 @@ body {
   margin-bottom: 20px;
 }
 
-.form__input {
-  position: relative;
+.form__row select {
+  margin-right: 10px;
 }
 
-.form__input input {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
-  color: #000;
-  margin-bottom: 30px;
-  border: none;
-  border-bottom: 1px solid #000;
-  outline: none;
-  background: transparent;
-}
-
-.form__input label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 10px 0;
-  font-size: 16px;
-  color: #000;
-  pointer-events: none;
-}
-
-.form__input input:focus ~ label,
-.form__input input:valid ~ label {
-  top: -20px;
-  left: 0;
-  color: #243b55;
-  font-size: 12px;
+.form__row div {
+  padding-top: 6px;
 }
 
 .form__control {
@@ -207,8 +181,4 @@ body {
 
 .form__controls {
   display: inline-block;
-}
-
-.hide {
-  display: none;
 }

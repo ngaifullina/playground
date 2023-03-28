@@ -44,14 +44,17 @@ export class ViewImpl implements View {
   public insertRow(onSelect: (option: string) => void): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
     const input = document.createElement("INPUT") as HTMLInputElement;
+    const innerDiv = document.createElement("DIV") as HTMLDivElement;
+
+    input.type = "text";
 
     select.addEventListener("change", (e: any) => {
       onSelect(e.target.value);
     });
 
+    innerDiv.append(select, input);
     const div = this.createRow();
-    div.appendChild(select);
-    div.appendChild(input);
+    div.appendChild(innerDiv);
     this.container.appendChild(div);
   }
 
