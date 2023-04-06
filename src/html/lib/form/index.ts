@@ -1,5 +1,3 @@
-import BaseModel from "../model.js";
-
 import { ModelImpl } from "./model.js";
 import { ViewImpl } from "./view.js";
 import { ControllerImpl } from "./controller.js";
@@ -12,14 +10,19 @@ export function open(
   options: string[],
   onSubmit: (formState: FormState) => void
 ) {
-  const [model, closeModel] = ModelImpl.create(new BaseModel<FormState>([]));
+  const [model, closeModel] = ModelImpl.create();
   const [view, closeView] = ViewImpl.create(root);
-  const controller = ControllerImpl.create(options, model, view);
+  const [controller, closeController] = ControllerImpl.create(
+    options,
+    model,
+    view
+  );
   controller.onSubmit((fs) => {
     if (fs.length > 0) {
       onSubmit(fs);
-      closeModel();
       closeView();
+      closeModel();
+      closeController();
     }
   });
 }

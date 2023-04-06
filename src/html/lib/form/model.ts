@@ -1,40 +1,51 @@
-import type { default as BaseModel, CalbackFn } from "../model";
+import { default as BaseModel, CalbackFn } from "../model.js";
 import type { FormState, Model, CloseFn } from "./types";
 
 export class ModelImpl implements Model {
-  public static create(model: BaseModel<FormState>): [Model, CloseFn] {
-    if (model.get().length > 0) {
-      throw new Error("Non-empty model found");
-    }
+  // todo support non-empty initial state
+  // public static create(initialState: FormState | null): [Model, CloseFn] {
 
-    const m = new ModelImpl(model);
+  public static create(): [Model, CloseFn] {
+    const m = new ModelImpl();
     return [m, () => m.close()];
   }
 
   private cancelHandlers: CloseFn[] = [];
+  private options: BaseModel<string[]>;
+  private values: string[];
 
-  private constructor(private model: BaseModel<FormState>) {}
+  private constructor() {
+    this.options = new BaseModel<string[]>([]);
+    this.values = [];
+  }
 
-  public get() {
-    return this.model.get();
+  public get(): FormState {
+    return this.options
+      .get()
+      .map((el, i) => ({ option: el, value: this.values[i]! }));
   }
 
   public trimLast() {
-    this.model.get().pop();
-    this.model.trigger();
+    this.options.get().pop();
+    this.options.trigger();
   }
 
   public setOption(newOption: string, index: number) {
-    this.model.get()[index] = { option: newOption };
-    this.model.trigger();
+    this.options.get()[index] = newOption;
+    this.options.trigger();
   }
 
-  public onChange(callback: CalbackFn<FormState>): void {
-    this.cancelHandlers.push(this.model.onChange(callback));
+  public setValue(newValue: string, index: number) {
+    this.values[index] = newValue;
+  }
+
+  public onOptionChange(callback: CalbackFn<string[]>): void {
+    this.cancelHandlers.push(this.options.onChange(callback));
   }
 
   private close() {
     this.cancelHandlers.forEach((fn) => fn());
-    this.model.set([]);
+    this.options.set([]);
+    // this.values = [];
   }
 }

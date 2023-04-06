@@ -41,16 +41,17 @@ export class ViewImpl implements View {
     this.form = root.querySelector(".form")!;
   }
 
-  public insertRow(onSelect: (option: string) => void): void {
+  public insertRow(
+    onSelect: (option: string) => void,
+    onInputChange: (value: string) => void
+  ): void {
     const select = document.createElement("SELECT") as HTMLSelectElement;
     const input = document.createElement("INPUT") as HTMLInputElement;
     const innerDiv = document.createElement("DIV") as HTMLDivElement;
+    input.setAttribute("type", "text");
 
-    input.type = "text";
-
-    select.addEventListener("change", (e: any) => {
-      onSelect(e.target.value);
-    });
+    select.addEventListener("change", (e: any) => onSelect(e.target.value));
+    input.addEventListener("change", (e: any) => onInputChange(e.target.value));
 
     innerDiv.append(select, input);
     const div = this.createRow();
@@ -105,8 +106,8 @@ export class ViewImpl implements View {
   public onSubmit(cb: () => void): void {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
-      this.getButtonsCallbacks().forEach((fn) => fn(e));
       cb();
+      this.getButtonsCallbacks().forEach((fn) => fn(e));
     });
   }
 
@@ -118,8 +119,15 @@ export class ViewImpl implements View {
   }
 
   private close(): void {
-    this.getButtonsCallbacks().forEach((fn) => {
+    // this.getButtonsCallbacks().forEach((fn) => {
+    //   this.buttons["+"].removeEventListener("click", fn);
+    //   this.buttons["-"].removeEventListener("click", fn);
+    // });
+
+    this.buttonCallbacks["+"].forEach((fn) => {
       this.buttons["+"].removeEventListener("click", fn);
+    });
+    this.buttonCallbacks["-"].forEach((fn) => {
       this.buttons["-"].removeEventListener("click", fn);
     });
   }

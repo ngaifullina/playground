@@ -1,4 +1,4 @@
-import type { Controller, FormState, Model, View } from "./types";
+import type { Controller, FormState, Model, View, CloseFn } from "./types";
 
 export class ControllerImpl implements Controller {
   private calculatedRows: string[][] = [];
@@ -7,8 +7,9 @@ export class ControllerImpl implements Controller {
     options: string[],
     model: Model,
     view: View
-  ): Controller {
-    return new ControllerImpl(options, model, view);
+  ): [Controller, CloseFn] {
+    const c = new ControllerImpl(options, model, view);
+    return [c, () => c.close()];
   }
 
   private constructor(
@@ -20,7 +21,7 @@ export class ControllerImpl implements Controller {
 
     this.view.onClick("+", () => this.insertRow());
     this.view.onClick("-", () => this.deleteLastRow());
-    this.model.onChange((fs) => this.updateOptions(fs));
+    this.model.onOptionChange((fs) => this.updateOptions(fs));
   }
 
   /**
@@ -44,10 +45,10 @@ export class ControllerImpl implements Controller {
     );
   }
 
-  private updateOptions(newFormState: FormState) {
+  private updateOptions(newFormState: string[]) {
     this.calculatedRows = ControllerImpl.calculateRowOptionSets(
       this.options,
-      ControllerImpl.getOptions(newFormState)
+      newFormState
     );
     this.calculatedRows.forEach((row, index) => {
       row.length <= 1
@@ -67,9 +68,13 @@ export class ControllerImpl implements Controller {
   }
 
   public onSubmit(cb: (fs: FormState) => void) {
+    this.close();
     this.view.onSubmit(() => cb(this.model.get()));
   }
 
+  public close() {
+    this.view.enableButton("+");
+  }
   /**
    * @throws Error if no options left available
    */
@@ -80,17 +85,16 @@ export class ControllerImpl implements Controller {
     const nextOptionToSelect = this.options.find(
       (el) => !selectedOptionSet.has(el)
     );
-    if (!nextOptionToSelect) {
-      throw new Error(`Failed to insertRow: no options avalible`);
-    }
+    if (!nextOptionToSelect) return;
 
     const index = formState.length;
 
-    this.view.insertRow((nextOptionToSelect) =>
-      this.model.setOption(nextOptionToSelect, index)
+    this.view.insertRow(
+      (option) => this.model.setOption(option, index),
+      (value) => this.model.setValue(value, index)
     );
 
-    this.model.setOption(nextOptionToSelect, index);
+    this.model.setOption(nextOptionToSelect!, index);
   }
 
   private deleteLastRow(): void {
