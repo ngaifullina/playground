@@ -19,10 +19,17 @@ const buttonCallbacks: Record<string, Fn[]> = {
 };
 
 const result: Fn[] = buttonCallbacks["-"].concat(buttonCallbacks["+"]);
-// console.log(result);
 result.forEach((fn) => fn());
-// for (let v of Object.values(buttonCallbacks)) {
-//   for (let f of v) {
-//     f();
-//   }
-// }
+for (let v of Object.values(buttonCallbacks)) {
+  for (let f of v) {
+    f();
+  }
+}
+
+const options = ["job", "name", "email"];
+const values = ["developer", "John", "john@mail.com"];
+
+options.map((el, i) => ({
+  option: el,
+  value: values[i],
+}));
