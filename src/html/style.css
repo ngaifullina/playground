@@ -106,6 +106,20 @@ body {
   color: #000;
 }
 
+.close {
+  display: inline-block;
+  position: absolute;
+  padding: 0 15px;
+  right: -35px;
+  top: -35px;
+  cursor: pointer;
+}
+
+.close::before {
+  content: "\00d7"; /* This will render the 'X' */
+  color: #ad9b7c;
+  font-size: 30px;
+}
 .visible {
   display: block;
 }

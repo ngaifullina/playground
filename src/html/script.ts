@@ -4,6 +4,7 @@ import type { FormState } from "./lib/form/types.js";
 
 const openFormButton = document.querySelector(".header__button")!;
 const formPopup = document.querySelector(".main_cover")!;
+const closeFormButton = document.querySelector(".close")!;
 
 const onSubmit = (formState: FormState) => {
   formPopup.classList.remove("visible");
@@ -21,3 +22,7 @@ openFormButton.addEventListener("click", () => {
     onSubmit
   );
 });
+
+closeFormButton.addEventListener("click", () =>
+  formPopup.classList.remove("visible")
+);
