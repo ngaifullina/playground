@@ -97,8 +97,8 @@ body {
   left: 50%;
   width: 400px;
   padding: 40px;
+  padding-bottom: 20px;
   transform: translate(-50%, -50%);
-  /* background: linear-gradient(#141e30, #243b55); */
   background: linear-gradient(#fff5ca, #ad9b7c);
   box-sizing: border-box;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
@@ -109,15 +109,15 @@ body {
 .close {
   display: inline-block;
   position: absolute;
-  padding: 0 15px;
-  right: -35px;
-  top: -35px;
+  padding: 0 9px;
+  right: 0;
+  top: 0;
   cursor: pointer;
 }
 
 .close::before {
   content: "\00d7"; /* This will render the 'X' */
-  color: #ad9b7c;
+  color: black;
   font-size: 30px;
 }
 .visible {
@@ -195,4 +195,13 @@ body {
 
 .form__controls {
   display: inline-block;
+}
+
+.error {
+  display: none;
+  color: red;
+  margin-top: 20px;
+  border: 1px solid red;
+  padding: 2px;
+  text-transform: uppercase;
 }
