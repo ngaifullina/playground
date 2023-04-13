@@ -18,12 +18,12 @@ export class ControllerImpl implements Controller {
     private view: View // private calculatedRows: string[][]
   ) {
     this.calculatedRows[0] = this.options;
-
     this.view.onClick("+", () => this.insertRow());
     this.view.onClick("-", () => this.deleteLastRow());
-    this.model.onOptionChange((fs) => this.updateOptions(fs));
-  }
 
+    this.model.onOptionChange((fs) => this.updateOptions(fs));
+    this.insertRow();
+  }
   /**
    * @argument {string[]} allOptions all available options
    * @argument {FormState} formState FormState instance
@@ -68,8 +68,14 @@ export class ControllerImpl implements Controller {
   }
 
   public onSubmit(cb: (fs: FormState) => void) {
-    this.close();
-    this.view.onSubmit(() => cb(this.model.get()));
+    this.view.onSubmit(() => {
+      if (this.checkEmptyField()) {
+        this.view.showError();
+        return;
+      }
+      cb(this.model.get());
+      this.close();
+    });
   }
 
   public close() {
@@ -100,5 +106,10 @@ export class ControllerImpl implements Controller {
   private deleteLastRow(): void {
     this.model.trimLast();
     this.view.deleteLastRow();
+  }
+
+  private checkEmptyField(): boolean {
+    const values = this.model.get().map((el) => el.value);
+    return values.some((el) => !el);
   }
 }

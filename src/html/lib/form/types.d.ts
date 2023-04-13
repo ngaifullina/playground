@@ -30,6 +30,7 @@ export type View = {
   setOptions(newOptions: string[], index: number): void;
   onClick(direction: Direction, cb: () => void): void;
   onSubmit(cb: () => void): void;
+  showError(): void;
 };
 
 export type Controller = {

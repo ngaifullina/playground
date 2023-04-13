@@ -120,9 +120,6 @@ body {
   color: black;
   font-size: 30px;
 }
-.visible {
-  display: block;
-}
 
 .form__row {
   margin-bottom: 20px;
@@ -204,4 +201,8 @@ body {
   border: 1px solid red;
   padding: 2px;
   text-transform: uppercase;
+}
+
+.visible {
+  display: block;
 }

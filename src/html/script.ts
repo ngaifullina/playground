@@ -5,7 +5,6 @@ import type { FormState } from "./lib/form/types.js";
 const openFormButton = document.querySelector(".header__button")!;
 const mainCover = document.querySelector(".main_cover")!;
 const closeFormButton = document.querySelector(".close")!;
-let hasBeenOpened = false;
 
 const onSubmit = (formState: FormState) => {
   mainCover.classList.remove("visible");
@@ -16,14 +15,11 @@ const onSubmit = (formState: FormState) => {
 
 openFormButton.addEventListener("click", () => {
   mainCover.classList.add("visible");
-  if (hasBeenOpened) return;
-
   openForm(
     document.querySelector(".popup")!,
     data.map(({ name }) => name),
     onSubmit
   );
-  hasBeenOpened = true;
 });
 
 // todo abstract away popup

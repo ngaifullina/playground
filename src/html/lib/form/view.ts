@@ -4,6 +4,7 @@ const FORM_ROW = ".form__row";
 const FORM_FIELDS = ".form__fields";
 const FORM_CONTROL_PLUS = ".form__control_plus";
 const FORM_CONTROL_MINUS = ".form__control_minus";
+const ERROR_MSG = ".error";
 
 type Listener = (e: any) => void;
 
@@ -111,25 +112,22 @@ export class ViewImpl implements View {
     });
   }
 
+  public showError() {
+    document.querySelector(ERROR_MSG)?.classList.add("visible");
+  }
+
+  public close(): void {
+    this.getButtonsCallbacks().forEach((fn) => {
+      this.buttons["+"].removeEventListener("click", fn);
+      this.buttons["-"].removeEventListener("click", fn);
+    });
+  }
+
   private createRow(): HTMLDivElement {
     const div = document.createElement("div");
     div.classList.add("form__row");
     div.innerHTML = '<label for="parameter">Choose from the list:</label>';
     return div;
-  }
-
-  private close(): void {
-    // this.getButtonsCallbacks().forEach((fn) => {
-    //   this.buttons["+"].removeEventListener("click", fn);
-    //   this.buttons["-"].removeEventListener("click", fn);
-    // });
-
-    this.buttonCallbacks["+"].forEach((fn) => {
-      this.buttons["+"].removeEventListener("click", fn);
-    });
-    this.buttonCallbacks["-"].forEach((fn) => {
-      this.buttons["-"].removeEventListener("click", fn);
-    });
   }
 
   private getButtonsCallbacks(): Listener[] {

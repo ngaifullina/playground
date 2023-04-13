@@ -18,12 +18,10 @@ export function open(
     view
   );
   controller.onSubmit((fs) => {
-    if (fs.length > 0) {
-      onSubmit(fs);
-      closeView();
-      closeModel();
-      closeController();
-    }
+    onSubmit(fs);
+    closeView();
+    closeModel();
+    closeController();
   });
 }
 
