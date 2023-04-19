@@ -46,6 +46,5 @@ export class ModelImpl implements Model {
   private close() {
     this.cancelHandlers.forEach((fn) => fn());
     this.options.set([]);
-    // this.values = [];
   }
 }

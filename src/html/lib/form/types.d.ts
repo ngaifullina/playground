@@ -28,6 +28,7 @@ export type View = {
   ): void;
   deleteLastRow(): void;
   setOptions(newOptions: string[], index: number): void;
+  setValue(value: string, index: number);
   onClick(direction: Direction, cb: () => void): void;
   onSubmit(cb: () => void): void;
   showError(): void;

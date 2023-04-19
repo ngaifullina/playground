@@ -17,12 +17,29 @@ export class ControllerImpl implements Controller {
     private model: Model,
     private view: View // private calculatedRows: string[][]
   ) {
+    const fields: FormState | null = JSON.parse(
+      localStorage.getItem("fields") || "[]"
+    );
+    if (fields?.length) {
+      fields.forEach(({ option, value }, i) => {
+        this.model.setOption(option, i);
+        this.model.setValue(value, i);
+        this.view.insertRow(
+          (option) => this.model.setOption(option, i),
+          (value) => this.model.setValue(value, i)
+        );
+        this.view.setValue(value, i);
+      });
+
+      this.updateOptions(fields.map((el) => el.option));
+    }
+    this.model.onOptionChange((fs) => this.updateOptions(fs));
+
     this.calculatedRows[0] = this.options;
     this.view.onClick("+", () => this.insertRow());
     this.view.onClick("-", () => this.deleteLastRow());
 
-    this.model.onOptionChange((fs) => this.updateOptions(fs));
-    this.insertRow();
+    // this.insertRow();
   }
   /**
    * @argument {string[]} allOptions all available options
@@ -73,6 +90,7 @@ export class ControllerImpl implements Controller {
         this.view.showError();
         return;
       }
+      this.saveFields();
       cb(this.model.get());
       this.close();
     });
@@ -110,6 +128,10 @@ export class ControllerImpl implements Controller {
 
   private checkEmptyField(): boolean {
     const values = this.model.get().map((el) => el.value);
-    return values.some((el) => !el);
+    return values.length === 0 || values.some((el) => !el);
+  }
+
+  private saveFields() {
+    localStorage.setItem("fields", JSON.stringify(this.model.get()));
   }
 }

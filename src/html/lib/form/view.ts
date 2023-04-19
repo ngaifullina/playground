@@ -88,6 +88,11 @@ export class ViewImpl implements View {
     }
   }
 
+  public setValue(value: string, index: number) {
+    const input = this.container.querySelectorAll("input")[index]!;
+    input.value = value;
+  }
+
   public deleteLastRow(): void {
     const rows = this.container.querySelectorAll(FORM_ROW);
     const numberRows = rows.length;
@@ -117,6 +122,8 @@ export class ViewImpl implements View {
   }
 
   public close(): void {
+    document.querySelector(ERROR_MSG)?.classList.remove("visible");
+
     this.getButtonsCallbacks().forEach((fn) => {
       this.buttons["+"].removeEventListener("click", fn);
       this.buttons["-"].removeEventListener("click", fn);
