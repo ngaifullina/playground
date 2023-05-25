@@ -8,14 +8,15 @@ const ERROR_MSG = ".error";
 
 type Listener = (e: any) => void;
 
+type ButtonEntry = {
+  button: HTMLButtonElement;
+  callbacks: Listener[];
+};
+
 export class ViewImpl implements View {
   private readonly container: HTMLDivElement;
   private readonly form: HTMLFormElement;
-  private readonly buttons: Record<Direction, HTMLButtonElement>;
-  private readonly buttonCallbacks: Record<Direction, Listener[]> = {
-    "+": [],
-    "-": [],
-  };
+  private readonly buttons: Record<Direction, ButtonEntry>;
 
   public static create(root: HTMLElement): [View, CloseFn] {
     if (root.querySelector(FORM_ROW)) {
@@ -36,8 +37,14 @@ export class ViewImpl implements View {
   private constructor(root: HTMLElement) {
     this.container = root.querySelector(FORM_FIELDS)!;
     this.buttons = {
-      "+": root.querySelector(FORM_CONTROL_PLUS)!,
-      "-": root.querySelector(FORM_CONTROL_MINUS)!,
+      "+": {
+        button: root.querySelector(FORM_CONTROL_PLUS)!,
+        callbacks: [],
+      },
+      "-": {
+        button: root.querySelector(FORM_CONTROL_MINUS)!,
+        callbacks: [],
+      },
     };
     this.form = root.querySelector(".form")!;
   }
@@ -61,31 +68,37 @@ export class ViewImpl implements View {
   }
 
   public enableButton(direction: Direction) {
-    this.buttons[direction]!.disabled = false;
+    this.buttons[direction]!.button.disabled = false;
   }
 
   public disableButton(direction: Direction) {
-    this.buttons[direction]!.disabled = true;
+    this.buttons[direction]!.button.disabled = true;
   }
 
-  public setOptions(newOptions: string[], index: number): void {
-    const select = this.container.querySelectorAll("select")[index]!;
+  public setAvailableOptions(availableOptions: string[], index: number): void {
+    const select = this.getSelect(index);
     if (!select) return;
     const selected = select?.value;
-
     while (select.length) {
       select.remove(0);
     }
 
-    newOptions
+    availableOptions
       .map((o) => new Option(o, o))
       .forEach((o) => {
         select.add(o);
       });
 
-    if (selected && newOptions.includes(selected)) {
+    if (selected && availableOptions.includes(selected)) {
       select.value = selected;
     }
+  }
+
+  public setSelectedOption(option: string, index: number): void {
+    const select = this.getSelect(index);
+    // console.log(select, option);
+    select.value = option;
+    // console.log("after select option", select, select.value);
   }
 
   public setValue(value: string, index: number) {
@@ -105,15 +118,16 @@ export class ViewImpl implements View {
       cb();
     };
 
-    this.buttonCallbacks[direction].push(fn);
-    this.buttons[direction].addEventListener("click", fn);
+    const { button, callbacks } = this.buttons[direction];
+
+    callbacks.push(fn);
+    button.addEventListener("click", fn);
   }
 
   public onSubmit(cb: () => void): void {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
       cb();
-      this.getButtonsCallbacks().forEach((fn) => fn(e));
     });
   }
 
@@ -124,10 +138,11 @@ export class ViewImpl implements View {
   public close(): void {
     document.querySelector(ERROR_MSG)?.classList.remove("visible");
 
-    this.getButtonsCallbacks().forEach((fn) => {
-      this.buttons["+"].removeEventListener("click", fn);
-      this.buttons["-"].removeEventListener("click", fn);
-    });
+    Object.values(this.buttons).forEach(({ button, callbacks }) =>
+      callbacks.forEach((cb) => {
+        button.removeEventListener("click", cb);
+      })
+    );
   }
 
   private createRow(): HTMLDivElement {
@@ -137,7 +152,7 @@ export class ViewImpl implements View {
     return div;
   }
 
-  private getButtonsCallbacks(): Listener[] {
-    return this.buttonCallbacks["+"].concat(this.buttonCallbacks["-"]);
+  private getSelect(index: number): HTMLSelectElement {
+    return this.container.querySelectorAll("select")[index]!;
   }
 }

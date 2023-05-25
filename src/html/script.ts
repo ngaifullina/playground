@@ -6,20 +6,39 @@ const openFormButton = document.querySelector(".header__button")!;
 const mainCover = document.querySelector(".main_cover")!;
 const closeFormButton = document.querySelector(".close")!;
 
+// let closeForm: () => void = () => {};
+
 const onSubmit = (formState: FormState) => {
+  console.log(formState, "formState");
   mainCover.classList.remove("visible");
   formState.forEach((el) =>
     data.find((d) => d.name === el.option)!.callback(el.value)
   );
+  // closeForm();
 };
+
+//
 
 openFormButton.addEventListener("click", () => {
   mainCover.classList.add("visible");
+  // closeForm();
   openForm(
     document.querySelector(".popup")!,
     data.map(({ name }) => name),
     onSubmit
   );
+  // const closeFormWithSubmit = () =>
+  //   openForm(
+  //     document.querySelector(".popup")!,
+  //     data.map(({ name }) => name),
+  //     onSubmit
+  //   );
+  // closeForm = openForm(
+  //   document.querySelector(".popup")!,
+  //   data.map(({ name }) => name),
+  //   onSubmit
+  // );
+  // closeForm = closeFormWithSubmit;
 });
 
 // todo abstract away popup
@@ -37,6 +56,8 @@ mainCover.addEventListener("click", ({ target }) => {
   const clickedOnCloseFormButton = target === closeFormButton;
 
   if (clickedOutsidePopup || clickedOnCloseFormButton) {
+    console.log("outside");
     mainCover.classList.remove("visible");
+    // closeForm();
   }
 });

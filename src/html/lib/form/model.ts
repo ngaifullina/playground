@@ -35,8 +35,16 @@ export class ModelImpl implements Model {
     this.options.trigger();
   }
 
+  public getOptions() {
+    return this.options.get();
+  }
+
   public setValue(newValue: string, index: number) {
     this.values[index] = newValue;
+  }
+
+  public getValues() {
+    return this.values;
   }
 
   public onOptionChange(callback: CalbackFn<string[]>): void {
@@ -44,6 +52,7 @@ export class ModelImpl implements Model {
   }
 
   private close() {
+    console.log("in model close");
     this.cancelHandlers.forEach((fn) => fn());
     this.options.set([]);
   }

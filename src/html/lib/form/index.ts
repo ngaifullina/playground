@@ -10,6 +10,7 @@ export function open(
   options: string[],
   onSubmit: (formState: FormState) => void
 ) {
+  console.log("opening form");
   const [model, closeModel] = ModelImpl.create();
   const [view, closeView] = ViewImpl.create(root);
   const [controller, closeController] = ControllerImpl.create(

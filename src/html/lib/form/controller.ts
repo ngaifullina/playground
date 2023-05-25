@@ -1,6 +1,8 @@
 import type { Controller, FormState, Model, View, CloseFn } from "./types";
 
 export class ControllerImpl implements Controller {
+  private static LOCAL_STORAGE_KEY = "currentFormState";
+
   private calculatedRows: string[][] = [];
 
   public static create(
@@ -8,39 +10,55 @@ export class ControllerImpl implements Controller {
     model: Model,
     view: View
   ): [Controller, CloseFn] {
-    const c = new ControllerImpl(options, model, view);
+    const initialState: FormState = ControllerImpl.localStorageRead();
+    const c = new ControllerImpl(options, model, view, initialState);
     return [c, () => c.close()];
   }
 
-  private constructor(
+  protected constructor(
     private readonly options: string[],
     private model: Model,
-    private view: View // private calculatedRows: string[][]
+    private view: View,
+    initialState: FormState
   ) {
-    const fields: FormState | null = JSON.parse(
-      localStorage.getItem("fields") || "[]"
-    );
-    if (fields?.length) {
-      fields.forEach(({ option, value }, i) => {
-        this.model.setOption(option, i);
-        this.model.setValue(value, i);
-        this.view.insertRow(
-          (option) => this.model.setOption(option, i),
-          (value) => this.model.setValue(value, i)
-        );
-        this.view.setValue(value, i);
-      });
-
-      this.updateOptions(fields.map((el) => el.option));
+    if (!options.length) {
+      throw new Error("Attempted to create form with no options");
     }
-    this.model.onOptionChange((fs) => this.updateOptions(fs));
 
-    this.calculatedRows[0] = this.options;
-    this.view.onClick("+", () => this.insertRow());
+    const formState: FormState = initialState.length
+      ? initialState
+      : [
+          {
+            option: options[0]!, // ! is unreachable
+            value: "",
+          },
+        ];
+
+    this.model.onOptionChange(() => this.updateAvailableOptions());
+
+    formState.forEach(({ option, value }, index) => {
+      this.insertRow(option, value, index);
+    });
+
+    this.view.onClick("+", () => this.onPlusClick());
     this.view.onClick("-", () => this.deleteLastRow());
-
-    // this.insertRow();
   }
+
+  public onSubmit(cb: (fs: FormState) => void) {
+    this.view.onSubmit(() => {
+      if (this.isFieldEmptyOrMissing()) {
+        this.view.showError();
+        return;
+      }
+      ControllerImpl.localStorageClear();
+      cb(this.model.get());
+    });
+  }
+
+  public close() {
+    this.view.enableButton("+");
+  }
+
   /**
    * @argument {string[]} allOptions all available options
    * @argument {FormState} formState FormState instance
@@ -52,7 +70,7 @@ export class ControllerImpl implements Controller {
    *   ["age"]
    * ]
    */
-  public static calculateRowOptionSets(
+  protected static calculateRowOptionSets(
     allOptions: string[],
     selectedOptions: string[]
   ): string[][] {
@@ -62,10 +80,10 @@ export class ControllerImpl implements Controller {
     );
   }
 
-  private updateOptions(newFormState: string[]) {
+  private updateAvailableOptions() {
     this.calculatedRows = ControllerImpl.calculateRowOptionSets(
       this.options,
-      newFormState
+      this.model.getOptions()
     );
     this.calculatedRows.forEach((row, index) => {
       row.length <= 1
@@ -76,49 +94,42 @@ export class ControllerImpl implements Controller {
         ? this.view.disableButton("-")
         : this.view.enableButton("-");
 
-      this.view.setOptions(row, index);
+      this.view.setAvailableOptions(row, index);
     });
   }
 
-  private static getOptions(fs: FormState) {
-    return fs.map(({ option }) => option);
-  }
-
-  public onSubmit(cb: (fs: FormState) => void) {
-    this.view.onSubmit(() => {
-      if (this.checkEmptyField()) {
-        this.view.showError();
-        return;
-      }
-      this.saveFields();
-      cb(this.model.get());
-      this.close();
-    });
-  }
-
-  public close() {
-    this.view.enableButton("+");
-  }
-  /**
-   * @throws Error if no options left available
-   */
-  private insertRow(): void {
-    const formState = this.model.get();
-    const selectedOptionSet = new Set(ControllerImpl.getOptions(formState));
+  private onPlusClick() {
+    const selectedOptionSet = new Set(this.model.getOptions());
 
     const nextOptionToSelect = this.options.find(
       (el) => !selectedOptionSet.has(el)
     );
     if (!nextOptionToSelect) return;
 
-    const index = formState.length;
+    const index = selectedOptionSet.size;
 
+    this.insertRow(nextOptionToSelect, "", index);
+  }
+
+  private insertRow(option: string, value: string, index: number): void {
     this.view.insertRow(
-      (option) => this.model.setOption(option, index),
-      (value) => this.model.setValue(value, index)
+      (o) => {
+        this.model.setOption(o, index);
+        this.localStorageUpdate();
+      },
+      (v) => {
+        this.model.setValue(v, index);
+        this.localStorageUpdate();
+      }
     );
 
-    this.model.setOption(nextOptionToSelect!, index);
+    this.model.setOption(option, index);
+    this.model.setValue(value, index);
+
+    this.view.setSelectedOption(option, index);
+    this.view.setValue(value, index);
+
+    this.localStorageUpdate();
   }
 
   private deleteLastRow(): void {
@@ -126,12 +137,27 @@ export class ControllerImpl implements Controller {
     this.view.deleteLastRow();
   }
 
-  private checkEmptyField(): boolean {
-    const values = this.model.get().map((el) => el.value);
+  // todo different user-friendly validation errors
+  private isFieldEmptyOrMissing(): boolean {
+    const values = this.model.getValues();
     return values.length === 0 || values.some((el) => !el);
   }
 
-  private saveFields() {
-    localStorage.setItem("fields", JSON.stringify(this.model.get()));
+  private static localStorageRead(): FormState {
+    return JSON.parse(
+      localStorage.getItem(ControllerImpl.LOCAL_STORAGE_KEY) || "[]"
+    );
+  }
+
+  private static localStorageClear() {
+    localStorage.removeItem(ControllerImpl.LOCAL_STORAGE_KEY);
+  }
+
+  // todo resolve potential multiple instances conflicts
+  private localStorageUpdate() {
+    localStorage.setItem(
+      ControllerImpl.LOCAL_STORAGE_KEY,
+      JSON.stringify(this.model.get())
+    );
   }
 }
