@@ -1,11 +1,9 @@
 export const search = (arr: number[], target: number): number => {
   let start = 0;
-  let end = arr.length;
+  let end = arr.length - 1;
   let middle;
 
-  // shortcuts
-  // todo
-
+  if (target < arr[start] || target > arr[end]) return -1;
   do {
     middle = Math.floor((start + end) / 2);
     if (arr[middle] === target) {
