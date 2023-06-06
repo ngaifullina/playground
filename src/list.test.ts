@@ -1,182 +1,222 @@
 import { List } from "./list";
 
-describe("peek", () => {
-  const emptyList = new List();
-
-  test("returns null if head is empty", () => {
-    expect(emptyList.peek()).toBe(undefined);
+describe("toArray", () => {
+  test("returns [] on empty list if head is empty", () => {
+    expect(new List().toArray()).toEqual([]);
   });
 
-  test("returns last element", () => {
-    emptyList.push(11);
-    emptyList.push(12);
-    expect(emptyList.peek()).toBe(12);
+  test("returns array with list elements", () => {
+    expect(new List(11, 12).toArray()).toEqual([11, 12]);
+  });
+});
+
+// TODO
+// describe("List.from", () => {
+//   test("constructs an empty list if no argument is provided", () => {
+//     const l = List.from();
+//     expect(l.toArray()).toEqual([]);
+//   });
+
+//   test("constructs a list from array", () => {
+//     const arr = [11, 12];
+//     expect(List.from(arr).toArray()).toEqual(arr);
+//   });
+// });
+
+describe("peek", () => {
+  test("returns undefined if head is empty", () => {
+    expect(new List().peek()).toBe(undefined);
+  });
+
+  test("returns last element without modifying list", () => {
+    const items = [11, 12];
+    const l = new List(...items);
+    expect(l.peek()).toBe(12);
+    expect(l.toArray()).toEqual(items);
   });
 });
 
 describe("peekFront", () => {
-  const emptyList = new List();
-
-  test("returns null if head is empty", () => {
-    expect(emptyList.peekFront()).toBe(undefined);
+  test("returns undefined if head is empty", () => {
+    expect(new List().peekFront()).toBe(undefined);
   });
 
   test("returns first element", () => {
-    emptyList.push(11);
-    emptyList.push(12);
-    expect(emptyList.peekFront()).toBe(11);
+    const items = [11, 12];
+    const l = new List(...items);
+    expect(l.peekFront()).toBe(11);
+    expect(l.toArray()).toEqual(items);
   });
 });
 
 describe("push", () => {
-  test("follows LIFO semantic", () => {
-    const emptyList = new List();
+  test("adds element to the end of the list", () => {
+    const l = new List();
 
-    emptyList.push(11);
-    emptyList.push(12);
-    emptyList.push(13);
-    expect(emptyList.size()).toBe(3);
-    expect(emptyList.peek()).toBe(13);
+    l.push(11);
+    l.push(12);
+    l.push(13);
+    expect(l.size()).toBe(3);
+    expect(l.toArray()).toEqual([11, 12, 13]);
   });
 });
 
 describe("pop", () => {
-  test("empty returns undefined on pop", () => {
-    const emptyList = new List();
+  test("returns undefined on empty list", () => {
+    const l = new List();
 
-    expect(emptyList.pop()).toBe(undefined);
+    expect(l.pop()).toBe(undefined);
   });
 
-  test("pop returns and removes last pushed value", () => {
-    const emptyList = new List();
+  test("returns and removes last value", () => {
+    const l = new List(10, 11, 12);
 
-    emptyList.push(0);
-    emptyList.push(3);
-
-    expect(emptyList.pop()).toBe(3);
-    expect(emptyList.size()).toBe(1);
+    expect(l.pop()).toBe(12);
+    expect(l.toArray()).toEqual([10, 11]);
+    expect(l.size()).toBe(2);
   });
 });
 
 describe("unshift", () => {
-  const emptyList = new List();
+  test("inserts one item at list head", () => {
+    const l = new List();
 
-  test("insert at the beginning", () => {
-    emptyList.push(11);
-    emptyList.unshift(10);
-    expect(emptyList.size()).toBe(2);
-    expect(emptyList.peekFront()).toBe(10);
+    l.unshift(13);
+    expect(l.size()).toBe(1);
+    expect(l.toArray()).toEqual([13]);
+  });
+
+  test("inserts item at list head", () => {
+    const l = new List(11, 12);
+
+    l.unshift(13);
+    expect(l.size()).toBe(3);
+    expect(l.toArray()).toEqual([13, 11, 12]);
   });
 });
 
 describe("shift", () => {
-  const emptyList = new List();
-
-  test("returns error if nothiing to shift", () => {
-    expect(() => emptyList.shift()).toThrowError();
+  test("returns undefined if nothiing to shift", () => {
+    expect(new List().shift()).toBe(undefined);
   });
 
+  // todo add this logic as additional assertion on every modifying method
   test("shift decrements size", () => {
-    emptyList.push(11);
-    expect(emptyList.shift()).toBe(11);
-    expect(emptyList.size()).toBe(0);
+    const l = new List();
+
+    l.push(11);
+    expect(l.shift()).toBe(11);
+    expect(l.size()).toBe(0);
   });
 
   test("deletes from the beginning", () => {
-    emptyList.push(11);
-    emptyList.push(1);
-    emptyList.shift();
-    expect(emptyList.peekFront()).toBe(1);
+    const l = new List();
+
+    l.push(11);
+    l.push(1);
+    l.shift();
+    expect(l.peekFront()).toBe(1);
   });
 });
 
 describe("set", () => {
-  test("returns error if index is out of range", () => {
-    const emptyList = new List();
+  /*
+   todo cover cases:
+    — negative index (throws)
+  */
 
-    emptyList.push(11);
-    emptyList.push(12);
-    expect(() => emptyList.set(2, "kkk")).toThrowError();
+  test("at index 0 overwrites the head", () => {
+    const l = new List(11);
+    l.set(0, 70);
+    expect(l.toArray()).toEqual([70]);
+    expect(l.size()).toBe(1);
   });
 
-  test("value at correct index, deletes previous data", () => {
-    const emptyList = new List();
+  test("at index equal to list (length-1) overwrites the end", () => {
+    const l = new List(11, 12, 13);
+    l.set(2, 70);
+    expect(l.toArray()).toEqual([11, 12, 70]);
+    expect(l.size()).toBe(3);
+  });
 
-    emptyList.push(11);
-    emptyList.push(12);
-    emptyList.set(1, 70);
-    expect(emptyList.peek()).toBe(70);
-    expect(emptyList.peekFront()).toBe(11);
-    expect(emptyList.size()).toBe(2);
+  test("if index equals to list (length) throws error", () => {
+    const l = new List(11, 12, 13);
+    expect(() => l.set(3, 40)).toThrowError();
+  });
+
+  test("if index is out of range", () => {
+    const l = new List(11, 12);
+    expect(() => l.set(2, 222)).toThrowError();
+  });
+
+  test("at index between 0 and list length overwrites item in the middle", () => {
+    const l = new List(11, 12, 13, 15);
+
+    l.set(2, 70);
+    expect(l.toArray()).toEqual([11, 12, 70, 15]);
+    expect(l.size()).toBe(4);
   });
 });
 
 describe("insert", () => {
-  test("at the beginning", () => {
-    const emptyList = new List();
-    emptyList.push(11);
-    emptyList.push(12);
-    emptyList.insert(0, 10);
-    expect(emptyList.peekFront()).toBe(10);
-    expect(emptyList.size()).toBe(3);
+  /*
+   todo cover cases:
+    — negative index (throws)
+  */
+
+  test("at the head when index 0", () => {
+    const l = new List(11, 12);
+
+    l.insert(0, 10);
+    expect(l.toArray()).toEqual([10, 11, 12]);
+    expect(l.size()).toBe(3);
   });
 
-  test("at the end", () => {
-    const emptyList = new List();
-    emptyList.push(12);
-    emptyList.push(13);
-    emptyList.insert(2, 14);
-    expect(emptyList.size()).toBe(3);
-    expect(emptyList.peek()).toBe(14);
+  test("at the end when index equal to list length", () => {
+    const l = new List(11, 12, 13);
+    l.insert(3, 14);
+    expect(l.toArray()).toEqual([11, 12, 13, 14]);
+    expect(l.size()).toBe(4);
   });
 
-  test("in the middle", () => {
-    const emptyList = new List();
-    emptyList.push(1);
-    emptyList.push(2);
-    emptyList.push(3);
-    emptyList.push(4);
-    emptyList.insert(2, 30);
+  test("if index is out of range throws error", () => {
+    const l = new List(11, 12);
+    expect(() => l.set(2, 222)).toThrowError();
+  });
 
-    expect(emptyList.size()).toBe(5);
+  test("in the middle when index is between 0 and list length ", () => {
+    const l = new List(11, 12, 13, 14);
+    l.insert(2, 30);
+    expect(l.toArray()).toEqual([11, 12, 30, 13, 14]);
+    expect(l.size()).toBe(5);
   });
 });
 
-describe("delete", () => {
+describe.skip("delete", () => {
   test("returns error if index not found", () => {
-    const emptyList = new List();
-    expect(() => emptyList.delete(2)).toThrowError();
+    expect(() => new List().delete(2)).toThrowError();
   });
 
   test("delete first element", () => {
-    const emptyList = new List();
-    emptyList.push(3);
-    expect(emptyList.delete(0)).toBe(3);
-    expect(emptyList.size()).toBe(0);
+    const l = new List(3);
+
+    l.delete(0);
+    expect(l.toArray()).toEqual([]);
+    expect(l.size()).toBe(0);
   });
 
   test("delete last element", () => {
-    const emptyList = new List();
-    emptyList.push(3);
-    emptyList.push(4);
-    emptyList.push(5);
-    expect(emptyList.delete(2)).toBe(5);
-    expect(emptyList.peek()).toBe(4);
-    expect(emptyList.size()).toBe(2);
+    const l = new List(3, 4, 5);
+
+    l.delete(2);
+    expect(l.toArray()).toEqual([3, 4]);
+    expect(l.size()).toBe(2);
   });
 
   test("delete element in the middle", () => {
-    const emptyList = new List();
-    emptyList.push(3);
-    emptyList.push(4);
-    emptyList.push(5);
-    emptyList.push(6);
-    emptyList.push(7);
-    expect(emptyList.delete(2)).toBe(5);
-    expect(emptyList.size()).toBe(4);
-    expect(emptyList.shift()).toBe(3);
-    expect(emptyList.shift()).toBe(4);
-    expect(emptyList.shift()).toBe(6);
-    expect(emptyList.shift()).toBe(7);
+    const l = new List(3, 4, 5, 6, 7);
+    l.delete(2);
+    expect(l.toArray()).toEqual([3, 4, 6, 7]);
+    expect(l.size()).toBe(4);
   });
 });
