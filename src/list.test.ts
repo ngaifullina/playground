@@ -95,6 +95,30 @@ describe("unshift", () => {
   });
 });
 
+describe("getItemData", () => {
+  const l = new List(11, 12, 14, 15, 16);
+
+  test("negative index", () => {
+    expect(l.getItemData(-1)).toBe(16);
+    expect(l.getItemData(-2)).toBe(15);
+    expect(l.getItemData(-3)).toBe(14);
+    expect(l.getItemData(-4)).toBe(12);
+    expect(l.getItemData(-5)).toBe(11);
+  });
+
+  test("positive index", () => {
+    expect(l.getItemData(0)).toBe(11);
+    expect(l.getItemData(1)).toBe(12);
+    expect(l.getItemData(2)).toBe(14);
+    expect(l.getItemData(3)).toBe(15);
+    expect(l.getItemData(4)).toBe(16);
+  });
+  test("index out of range", () => {
+    expect(l.getItemData(6)).toBe(undefined);
+    expect(l.getItemData(-6)).toBe(undefined);
+  });
+});
+
 describe("shift", () => {
   test("returns undefined if nothiing to shift", () => {
     expect(new List().shift()).toBe(undefined);
