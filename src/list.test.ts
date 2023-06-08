@@ -219,6 +219,7 @@ describe("insert", () => {
 describe("delete", () => {
   test("returns undefined if index not found", () => {
     expect(new List().delete(2)).toBe(undefined);
+    expect(new List(1, 2, 3).delete(3)).toBe(undefined);
   });
 
   test("delete first element", () => {

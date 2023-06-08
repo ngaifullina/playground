@@ -11,10 +11,6 @@ export class List<T> {
     items.forEach((i) => this.push(i));
   }
 
-  public last(): Item<T> | undefined {
-    return this.getItem(this.length - 1);
-  }
-
   public push(data: T): number {
     this.insert(this.length, data);
     return this.length;
@@ -38,6 +34,10 @@ export class List<T> {
   }
 
   private getItem(index: number): Item<T> | undefined {
+    if (Math.abs(index) > this.length) {
+      return undefined;
+    }
+
     let i = 0;
     let current = this.head;
     let itemToFind = this.head;
@@ -72,30 +72,22 @@ export class List<T> {
    * @returns {T} old value
    */
   public set(index: number, value: T): T {
-    if (index < 0 || index > this.length) {
-      throw new Error(`Failed to set: ${index} is out of bounds`);
-    }
-
-    // todo better impl
-
     const itemAtIndex = this.getItem(index);
-    if (!this.getItem(index) || !itemAtIndex) {
+    if (!itemAtIndex) {
       throw new Error(`Failed to set: ${index} is out of range`);
     }
 
-    if (value) this.getItem(index)!.data = value;
+    this.getItem(index)!.data = value;
     return itemAtIndex.data;
   }
 
   public insert(index: number, value: T): void {
-    if (Math.abs(index) > this.length && index !== 0) {
+    if (Math.abs(index) > this.length) {
       throw new Error(`Failed to set: ${index} is out of bounds`);
     }
     if (index === 0) {
       const node = new Item(value, this.head);
       this.head = node;
-    } else if (index === this.length - 1) {
-      this.getItem(index)?.next;
     } else {
       const item = this.getItem(index - 1);
       const node = new Item(value, item?.next);
@@ -110,27 +102,18 @@ export class List<T> {
   }
 
   public peek(): T | undefined {
-    if (!this.last()) return undefined;
-    return this.last()!.data;
+    const last = this.getItem(this.length - 1);
+    if (!last) return undefined;
+    return last.data;
   }
 
   public delete(index: number): T | undefined {
-    if (index > this.length) return undefined;
+    if (index >= this.length || index < 0 || !this.head) return undefined;
     let item: T | undefined = undefined;
 
     if (index === 0) {
-      if (!this.head) return undefined;
       item = this.head.data;
       this.head = this.head?.next;
-    } else if (index === this.length - 1) {
-      const last = this.getItem(index - 1);
-      if (!last) {
-        item = this.head?.data;
-        this.head = null;
-      } else {
-        item = last.next?.data;
-        last.next = null;
-      }
     } else {
       const start = this.getItem(index - 1);
       item = start?.next?.data;
