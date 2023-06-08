@@ -11,67 +11,26 @@ export class List<T> {
     items.forEach((i) => this.push(i));
   }
 
-  public last(): Item<T> | null {
-    let current = this.head;
-    if (!current) return null;
-
-    while (current.next) {
-      current = current.next;
-    }
-
-    return current;
+  public last(): Item<T> | undefined {
+    return this.getItem(this.length - 1);
   }
 
   public push(data: T): number {
-    const node = new Item(data);
-    if (!this.head) {
-      this.head = node;
-    } else {
-      this.last()!.next = node;
-    }
-
-    this.length++;
+    this.insert(this.length, data);
     return this.length;
   }
 
   public unshift(data: T): number {
-    const node = new Item(data, this.head);
-    this.head = node;
-    this.length++;
+    this.insert(0, data);
     return this.length;
   }
 
   public shift(): T | undefined {
-    if (!this.head) {
-      return undefined;
-    }
-    const head = this.head;
-    this.head = this.head?.next;
-    this.length--;
-
-    return head.data;
+    return this.delete(0);
   }
 
   public pop(): T | undefined {
-    if (!this.head) {
-      return undefined;
-    } else if (this.head?.next === null) {
-      const item = this.head!.data;
-      this.head = null;
-      this.length--;
-      return item;
-    } else {
-      let current = this.head;
-
-      while (current.next?.next) {
-        current = current?.next;
-      }
-
-      const item = current.next?.data;
-      current.next = null;
-      this.length--;
-      return item;
-    }
+    return this.delete(this.length - 1);
   }
 
   public size(): number {
@@ -129,21 +88,20 @@ export class List<T> {
   }
 
   public insert(index: number, value: T): void {
-    if (index < 0 || index > this.length) {
+    if (Math.abs(index) > this.length && index !== 0) {
       throw new Error(`Failed to set: ${index} is out of bounds`);
     }
-
-    const itemToInsert = this.getItem(index);
-    if (!itemToInsert || index === this.length - 1) {
-      this.push(value);
-    } else if (index === 0) {
-      this.unshift(value);
+    if (index === 0) {
+      const node = new Item(value, this.head);
+      this.head = node;
+    } else if (index === this.length - 1) {
+      this.getItem(index)?.next;
     } else {
-      const node = new Item(value, itemToInsert);
-      const start = this.getItem(index - 1);
-      start!.next = node;
-      this.length++;
+      const item = this.getItem(index - 1);
+      const node = new Item(value, item?.next);
+      item!.next = node;
     }
+    this.length++;
   }
 
   public peekFront(): T | undefined {
@@ -157,21 +115,30 @@ export class List<T> {
   }
 
   public delete(index: number): T | undefined {
+    if (index > this.length) return undefined;
+    let item: T | undefined = undefined;
+
     if (index === 0) {
-      return this.shift(); //todo why return
+      if (!this.head) return undefined;
+      item = this.head.data;
+      this.head = this.head?.next;
     } else if (index === this.length - 1) {
-      return this.pop();
-    } else {
-      const pointerTodelete = this.getItem(index - 1)?.next;
-      console.log(pointerTodelete, "pointerTodelete");
-      if (!pointerTodelete) {
-        throw new Error(`Failed to delete: index ${index} not found`);
+      const last = this.getItem(index - 1);
+      if (!last) {
+        item = this.head?.data;
+        this.head = null;
+      } else {
+        item = last.next?.data;
+        last.next = null;
       }
-      // this.set(index - 1, undefined, pointerTodelete.next); //todo
-      this.length--;
-      this.forEachFn((item) => console.log(item));
-      return pointerTodelete.data;
+    } else {
+      const start = this.getItem(index - 1);
+      item = start?.next?.data;
+      start!.next = start?.next?.next!;
     }
+
+    this.length--;
+    return item;
   }
 
   public forEachFn(fn: (current: T) => void): void {
@@ -198,11 +165,4 @@ export class List<T> {
   // filter
 
   // reduce
-
-  // forEach
 }
-// const a = new List(1, 2, 3);
-const b = new List([4, 5, 6]);
-
-// a.forEachFn((el) => console.log(el));
-// b.forEachFn((el) => console.log(el));

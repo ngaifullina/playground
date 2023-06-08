@@ -216,9 +216,9 @@ describe("insert", () => {
   });
 });
 
-describe.skip("delete", () => {
-  test("returns error if index not found", () => {
-    expect(() => new List().delete(2)).toThrowError();
+describe("delete", () => {
+  test("returns undefined if index not found", () => {
+    expect(new List().delete(2)).toBe(undefined);
   });
 
   test("delete first element", () => {
