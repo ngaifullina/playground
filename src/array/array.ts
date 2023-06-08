@@ -24,7 +24,6 @@ export const repeatElementAtIndex = <T extends number>(
   return arr;
 };
 
-// todo
 export const repeatElementAtIndexDeep = <T extends number>(
   times: number,
   index: number,

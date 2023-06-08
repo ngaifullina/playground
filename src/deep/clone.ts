@@ -1,4 +1,3 @@
-//todo
 export const clone = <T>(value: T): T => {
   switch (typeof value) {
     case "undefined":

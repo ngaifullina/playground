@@ -8,28 +8,3 @@ export const without = <T>(object: Record<string, T>, ...args: string[]) => {
 };
 // const data = { a: 1, b: 2, c: 3 };
 // console.log(without(data, "b", "c")); // { a: 1 }
-
-const fn: Fn = () => console.log("111");
-const fn2: Fn = () => console.log("222");
-
-type Fn = () => void;
-const buttonCallbacks: Record<string, Fn[]> = {
-  "+": [fn, fn2],
-  "-": [fn2],
-};
-
-const result: Fn[] = buttonCallbacks["-"].concat(buttonCallbacks["+"]);
-result.forEach((fn) => fn());
-for (let v of Object.values(buttonCallbacks)) {
-  for (let f of v) {
-    f();
-  }
-}
-
-const options = ["job", "name", "email"];
-const values = ["developer", "John", "john@mail.com"];
-
-options.map((el, i) => ({
-  option: el,
-  value: values[i],
-}));

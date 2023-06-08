@@ -8,11 +8,8 @@ export namespace divisible {
 
 function round(grades: number[]): number[] {
   return grades.map((el) => {
-    if (5 - (el % 5) < 3 && el >= 38) {
-      return divisible.upper(el, 5);
-    } else {
-      return el;
-    }
+    if (5 - (el % 5) < 3 && el >= 38) return divisible.upper(el, 5);
+    else return el;
   });
 }
 console.log(round([73, 67, 38, 33]));
