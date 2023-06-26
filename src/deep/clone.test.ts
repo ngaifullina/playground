@@ -16,7 +16,7 @@ describe("Clone primitives", () => {
 describe("Clone object", () => {
   test("{}", () => {
     const a = { name: "Masha", age: 29 };
-    expect(clone(a)).toEqual(a);
+    expect(clone(a)).toEqual({ name: "Masha", age: 29 });
   });
 
   test("deep", () => {
@@ -29,16 +29,16 @@ describe("Clone object", () => {
         q: ["", ""],
       },
     };
-    const cloneA = clone(a);
-    expect(cloneA).toEqual(a);
-    cloneA.o.q = ["123", ""];
-    expect(cloneA).not.toEqual(a);
-    // expect(a.o).not.toBe(cloneA.o);
+    const b = clone(a);
+    expect(b).toEqual(a);
+    b.o.q = ["123", ""];
+    expect(b).not.toEqual(a);
+    expect(a.o).not.toBe(b.o);
   });
 
   test("array, integers", () => {
     const a = [1, 2, 3, 4, 5];
-    expect(clone(a)).toEqual(a);
+    expect(clone(a)).toEqual([1, 2, 3, 4, 5]);
   });
   test("array, all types", () => {
     let a = [null, undefined, "", "s", 0, -1, [[1], [2]], { q: { w: 1 } }];

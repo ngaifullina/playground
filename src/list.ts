@@ -37,6 +37,23 @@ export class List<T> {
     return this.length;
   }
 
+  private getNegativeItem(index: number): Item<T> | undefined {
+    let i = 0;
+    let current = this.head;
+    let itemToFind = this.head;
+
+    for (i; i < Math.abs(index); i++) {
+      if (!itemToFind) return undefined;
+      itemToFind = itemToFind?.next;
+    }
+
+    while (itemToFind) {
+      itemToFind = itemToFind.next;
+      current = current?.next!;
+    }
+    return current!;
+  }
+
   private getItem(index: number): Item<T> | undefined {
     if (Math.abs(index) > this.length) {
       return undefined;
@@ -44,26 +61,16 @@ export class List<T> {
 
     let i = 0;
     let current = this.head;
-    let itemToFind = this.head;
 
-    if (index < 0) {
-      for (i; i < Math.abs(index); i++) {
-        if (!itemToFind) return undefined;
-        itemToFind = itemToFind?.next;
-      }
-
-      while (itemToFind) {
-        itemToFind = itemToFind.next;
-        current = current?.next!;
-      }
-      return current!;
-    } else {
+    if (index >= 0) {
       for (i; i < index; i++) {
         if (!current) return undefined;
         current = current?.next;
       }
 
       return current!;
+    } else {
+      return this.getNegativeItem(index);
     }
   }
 

@@ -10,19 +10,6 @@ describe("toArray", () => {
   });
 });
 
-// TODO
-// describe("List.from", () => {
-//   test("constructs an empty list if no argument is provided", () => {
-//     const l = List.from();
-//     expect(l.toArray()).toEqual([]);
-//   });
-
-//   test("constructs a list from array", () => {
-//     const arr = [11, 12];
-//     expect(List.from(arr).toArray()).toEqual(arr);
-//   });
-// });
-
 describe("peek", () => {
   test("returns undefined if head is empty", () => {
     expect(new List().peek()).toBe(undefined);
@@ -95,27 +82,28 @@ describe("unshift", () => {
   });
 });
 
-describe("getItemData", () => {
+describe("get", () => {
   const l = new List(11, 12, 14, 15, 16);
 
   test("negative index", () => {
-    expect(l.getItemData(-1)).toBe(16);
-    expect(l.getItemData(-2)).toBe(15);
-    expect(l.getItemData(-3)).toBe(14);
-    expect(l.getItemData(-4)).toBe(12);
-    expect(l.getItemData(-5)).toBe(11);
+    expect(l.get(-1)).toBe(16);
+    expect(l.get(-2)).toBe(15);
+    expect(l.get(-3)).toBe(14);
+    expect(l.get(-4)).toBe(12);
+    expect(l.get(-5)).toBe(11);
   });
 
   test("positive index", () => {
-    expect(l.getItemData(0)).toBe(11);
-    expect(l.getItemData(1)).toBe(12);
-    expect(l.getItemData(2)).toBe(14);
-    expect(l.getItemData(3)).toBe(15);
-    expect(l.getItemData(4)).toBe(16);
+    expect(l.get(0)).toBe(11);
+    expect(l.get(1)).toBe(12);
+    expect(l.get(2)).toBe(14);
+    expect(l.get(3)).toBe(15);
+    expect(l.get(4)).toBe(16);
   });
+
   test("index out of range", () => {
-    expect(l.getItemData(6)).toBe(undefined);
-    expect(l.getItemData(-6)).toBe(undefined);
+    expect(l.get(6)).toBe(undefined);
+    expect(l.get(-6)).toBe(undefined);
   });
 });
 
@@ -124,30 +112,27 @@ describe("shift", () => {
     expect(new List().shift()).toBe(undefined);
   });
 
-  // todo add this logic as additional assertion on every modifying method
   test("shift decrements size", () => {
     const l = new List();
 
     l.push(11);
     expect(l.shift()).toBe(11);
-    expect(l.size()).toBe(0);
+    expect(l.isEmpty()).toBe(true);
   });
 
   test("deletes from the beginning", () => {
-    const l = new List();
-
-    l.push(11);
-    l.push(1);
+    const l = new List(11, 1);
     l.shift();
     expect(l.peekFront()).toBe(1);
+    expect(l.size()).toBe(1);
   });
 });
 
 describe("set", () => {
-  /*
-   todo cover cases:
-    — negative index (throws)
-  */
+  test("at negative index throws", () => {
+    const l = new List(11);
+    expect(() => l.set(-2, 70)).toThrowError();
+  });
 
   test("at index 0 overwrites the head", () => {
     const l = new List(11);
@@ -183,14 +168,12 @@ describe("set", () => {
 });
 
 describe("insert", () => {
-  /*
-   todo cover cases:
-    — negative index (throws)
-  */
-
+  test("at negative index > length throws", () => {
+    const l = new List(11, 13, 2);
+    expect(() => l.insert(-5, 70)).toThrowError();
+  });
   test("at the head when index 0", () => {
     const l = new List(11, 12);
-
     l.insert(0, 10);
     expect(l.toArray()).toEqual([10, 11, 12]);
     expect(l.size()).toBe(3);
@@ -217,17 +200,21 @@ describe("insert", () => {
 });
 
 describe("delete", () => {
-  test("returns undefined if index not found", () => {
-    expect(new List().delete(2)).toBe(undefined);
+  test("does nothing on empty list", () => {
+    expect(new List().delete(0)).toBe(undefined);
+    expect(new List().delete(1)).toBe(undefined);
+  });
+
+  test("returns undefined if index out of bounds", () => {
     expect(new List(1, 2, 3).delete(3)).toBe(undefined);
+    expect(new List(1, 2, 3).delete(-1)).toBe(undefined);
   });
 
   test("delete first element", () => {
     const l = new List(3);
 
     l.delete(0);
-    expect(l.toArray()).toEqual([]);
-    expect(l.size()).toBe(0);
+    expect(l.isEmpty()).toBe(true);
   });
 
   test("delete last element", () => {
