@@ -11,6 +11,10 @@ export class List<T> {
     items.forEach((i) => this.push(i));
   }
 
+  public isEmpty() {
+    return !this.head;
+  }
+
   public push(data: T): number {
     this.insert(this.length, data);
     return this.length;
@@ -54,16 +58,16 @@ export class List<T> {
       }
       return current!;
     } else {
-      while (i < index) {
+      for (i; i < index; i++) {
         if (!current) return undefined;
-        current = current.next;
-        i++;
+        current = current?.next;
       }
+
       return current!;
     }
   }
 
-  public getItemData(index: number): T | undefined {
+  public get(index: number): T | undefined {
     return this.getItem(index)?.data;
   }
 
@@ -108,34 +112,39 @@ export class List<T> {
   }
 
   public delete(index: number): T | undefined {
-    if (index >= this.length || index < 0 || !this.head) return undefined;
-    let item: T | undefined = undefined;
+    if (index < 0 || index >= this.length) return undefined;
+    let item: T;
 
     if (index === 0) {
-      item = this.head.data;
-      this.head = this.head?.next;
+      item = this.head!.data;
+      this.head = this.head!.next;
     } else {
-      const start = this.getItem(index - 1);
-      item = start?.next?.data;
-      start!.next = start?.next?.next!;
+      const prev = this.getItem(index - 1)!;
+      const target = prev.next!;
+      prev.next = target.next;
+      item = target.data;
     }
 
     this.length--;
     return item;
   }
 
-  public forEachFn(fn: (current: T) => void): void {
+  //todo tests
+  public forEach(fn: (value: T, index: number, list: List<T>) => void): void {
     let current = this.head;
 
+    let i = 0;
     while (current) {
-      fn(current.data);
+      fn(current.data, i, this);
       current = current.next;
+      i++;
     }
   }
 
   public toArray(): Array<T> {
-    const arr: Array<T> = [];
-    this.forEachFn((el) => arr.push(el));
+    const arr: Array<T> = Array(this.length);
+    this.forEach((el, i) => (arr[i] = el));
+
     return arr;
   }
 
@@ -149,3 +158,4 @@ export class List<T> {
 
   // reduce
 }
+[1, 2, 3].forEach;
