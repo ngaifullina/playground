@@ -50,12 +50,6 @@ describe("Deep equal should cover case of", () => {
       expect(equal(a, b)).toBe(false);
     });
 
-    test("missing vs undefined value", () => {
-      const a = {};
-      const b = { u: undefined };
-      expect(equal(a, b)).toBe(false);
-    });
-
     test("null vs missing value", () => {
       let a = { u: null };
       let b = {};

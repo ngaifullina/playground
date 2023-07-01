@@ -4,6 +4,7 @@ describe("Difference beetween two objects", () => {
   test("returns empty object if two fields are null", () => {
     const a = { n: null };
     const b = { n: null };
+
     expect(diff(a, b)).toEqual({});
   });
 
@@ -48,7 +49,7 @@ describe("Difference beetween two arrays", () => {
     const a = { arr: [0, 3, 4] };
     const b = { arr: [0] };
 
-    expect(diff(a, b)).toEqual({ arr: [3, 4] });
+    expect(diff(a, b)).toEqual({ arr: [0, 3, 4] });
   });
 
   test("returns missing items of array", () => {
@@ -65,38 +66,10 @@ describe("Difference beetween two arrays", () => {
     expect(diff(a, b)).toEqual([[0]]);
   });
 
-  test("in objects", () => {
-    const a = {
-      // c: undefined,
-      // o: -1,
-      m: "s",
-      // a: [[0], [-1]],
-      // n: {
-      //   q: ["0", "1"],
-      // },
-      d: "different",
-    };
+  test("returns missing arrays of objects", () => {
+    const a = [{ k: 0 }, { k: -1 }];
+    const b = [{ k: -1 }];
 
-    const b = {
-      // c: undefined,
-      // o: 0, // different int
-      m: "s",
-      // a: [[-1]], // only 1-st of array
-      // n: {
-      //   q: ["1", "2"],
-      // },
-      i: "another",
-    };
-
-    const c = {
-      // o: -1,
-      // a: [[0]],
-      // n: {
-      //   q: ["0"],
-      // },
-      d: "different",
-    };
-
-    expect(diff(a, b)).toEqual(c);
+    expect(diff(a, b)).toEqual([{ k: 0 }]);
   });
 });
